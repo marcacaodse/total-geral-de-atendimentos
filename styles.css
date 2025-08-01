@@ -1,0 +1,127 @@
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card-shadow {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.total-display {
+    background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    font-weight: bold;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+}
+
+.total-display .title-text {
+    color: #1e3a8a;
+}
+
+.total-display .value-text {
+    color: #1e3a8a;
+}
+
+.total-display .period-text {
+    color: #1e3a8a;
+}
+
+.filter-btn {
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.filter-btn.active {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+}
+
+.chart-container {
+    position: relative;
+    height: 450px;
+    width: 100%;
+}
+
+.chart-container-large {
+    position: relative;
+    height: 600px;
+    width: 100%;
+}
+
+@media print {
+    .no-print { 
+        display: none !important; 
+    }
+    body { 
+        background: white !important; 
+    }
+    .gradient-bg { 
+        background: #667eea !important; 
+    }
+    .total-display { 
+        background: #4facfe !important; 
+    }
+    .container { 
+        max-width: none !important; 
+    }
+    .grid { 
+        page-break-inside: avoid; 
+    }
+}
+
+/* Otimizações para PDF */
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100%;
+    padding: 0 20px;
+}
+
+.grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.grid-cols-1 {
+    grid-template-columns: 1fr;
+}
+
+.lg\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.md\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1024px) {
+    .lg\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    .lg\:grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
