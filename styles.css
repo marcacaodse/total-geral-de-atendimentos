@@ -1,5 +1,5 @@
 .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
 }
 
 .card-shadow {
@@ -123,5 +123,125 @@ body {
     .lg\:grid-cols-4 {
         grid-template-columns: 1fr;
     }
+}
+
+
+/* Estilos para a tabela de CBOs */
+#tabelaCBOs {
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#tabelaCBOs th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+#tabelaCBOs td {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+}
+
+#tabelaCBOs tr:hover {
+    background-color: #f3f4f6 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#tabelaCBOs tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsividade da tabela */
+@media (max-width: 768px) {
+    #tabelaCBOs {
+        font-size: 14px;
+    }
+    
+    #tabelaCBOs th,
+    #tabelaCBOs td {
+        padding: 8px 12px;
+    }
+}
+
+
+
+/* Estilos para checkboxes personalizados */
+.checkbox-filtro {
+    appearance: none;
+    background-color: #ffffff;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox-filtro:checked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+}
+
+.checkbox-filtro:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox-filtro:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.checkbox-filtro:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Container dos checkboxes */
+#checkboxUnidades, #checkboxCBOs {
+    max-height: 128px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+#checkboxUnidades::-webkit-scrollbar, #checkboxCBOs::-webkit-scrollbar {
+    width: 6px;
+}
+
+#checkboxUnidades::-webkit-scrollbar-track, #checkboxCBOs::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 3px;
+}
+
+#checkboxUnidades::-webkit-scrollbar-thumb, #checkboxCBOs::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#checkboxUnidades::-webkit-scrollbar-thumb:hover, #checkboxCBOs::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Hover effect para as linhas dos checkboxes */
+#checkboxUnidades > div:hover, #checkboxCBOs > div:hover {
+    background-color: #f8fafc;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
 }
 
