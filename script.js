@@ -155,13 +155,12 @@ document.addEventListener('DOMContentLoaded', function() {
     atualizarTotal();
     
     // Event listeners
-    document.getElementById('btnAtualizar').addEventListener('click', aplicarFiltros);
-    document.getElementById('btnDownload').addEventListener('click', downloadExcel);
+    document.getElementById("btnAtualizar").addEventListener("click", aplicarFiltros);
+    document.getElementById("btnLimpar").addEventListener("click", atualizarDados);
+    document.getElementById("btnDownload").addEventListener("click", downloadExcel);
     
-    // Auto-aplicar filtros quando mudarem
-    document.getElementById('filtroUnidade').addEventListener('change', aplicarFiltros);
-    document.getElementById('filtroCBO').addEventListener('change', aplicarFiltros);
-    document.getElementById('filtroMes').addEventListener('change', aplicarFiltros);
+    // Auto-aplicar filtros quando o mês mudar
+    document.getElementById("filtroMes").addEventListener("change", aplicarFiltros);
 });
 
 function popularFiltros() {
@@ -169,36 +168,54 @@ function popularFiltros() {
     const unidades = [...new Set(dadosOriginais.map(item => item.unidade))].sort();
     const cbos = [...new Set(dadosOriginais.map(item => item.cbo))].sort();
     
-    const selectUnidade = document.getElementById('filtroUnidade');
-    const selectCBO = document.getElementById('filtroCBO');
+    const containerUnidades = document.getElementById("checkboxUnidades");
+    const containerCBOs = document.getElementById("checkboxCBOs");
     
-    // Limpar e popular unidades
-    selectUnidade.innerHTML = '<option value="">Todas as Unidades</option>';
+    // Limpar e popular unidades com checkboxes
+    containerUnidades.innerHTML = "";
     unidades.forEach(unidade => {
-        const option = document.createElement('option');
-        option.value = unidade;
-        option.textContent = unidade;
-        selectUnidade.appendChild(option);
+        const div = document.createElement("div");
+        div.className = "flex items-center";
+        div.innerHTML = `
+            <input type="checkbox" id="unidade_${unidade.replace(/\s+/g, "_")}" value="${unidade}" 
+                   class="checkbox-filtro mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="unidade_${unidade.replace(/\s+/g, "_")}" class="text-sm text-gray-700 cursor-pointer">${unidade}</label>
+        `;
+        containerUnidades.appendChild(div);
     });
     
-    // Limpar e popular CBOs
-    selectCBO.innerHTML = '<option value="">Todos os CBOs</option>';
+    // Limpar e popular CBOs com checkboxes
+    containerCBOs.innerHTML = "";
     cbos.forEach(cbo => {
-        const option = document.createElement('option');
-        option.value = cbo;
-        option.textContent = cbo;
-        selectCBO.appendChild(option);
+        const div = document.createElement("div");
+        div.className = "flex items-center";
+        div.innerHTML = `
+            <input type="checkbox" id="cbo_${cbo.replace(/\s+/g, "_")}" value="${cbo}" 
+                   class="checkbox-filtro mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="cbo_${cbo.replace(/\s+/g, "_")}" class="text-sm text-gray-700 cursor-pointer">${cbo}</label>
+        `;
+        containerCBOs.appendChild(div);
+    });
+    
+    // Adicionar event listeners para os checkboxes
+    document.querySelectorAll(".checkbox-filtro").forEach(checkbox => {
+        checkbox.addEventListener("change", aplicarFiltros);
     });
 }
 
 function aplicarFiltros() {
-    const filtroUnidade = document.getElementById('filtroUnidade').value;
-    const filtroCBO = document.getElementById('filtroCBO').value;
-    const filtroMes = document.getElementById('filtroMes').value;
+    // Obter valores selecionados dos checkboxes
+    const unidadesSelecionadas = Array.from(document.querySelectorAll("#checkboxUnidades input[type=\"checkbox\"]:checked"))
+        .map(checkbox => checkbox.value);
+    const cbosSelecionados = Array.from(document.querySelectorAll("#checkboxCBOs input[type=\"checkbox\"]:checked"))
+        .map(checkbox => checkbox.value);
+    const filtroMes = document.getElementById("filtroMes").value;
     
     dadosFiltrados = dadosOriginais.filter(item => {
-        return (!filtroUnidade || item.unidade === filtroUnidade) &&
-               (!filtroCBO || item.cbo === filtroCBO);
+        const passaUnidade = unidadesSelecionadas.length === 0 || unidadesSelecionadas.includes(item.unidade);
+        const passaCBO = cbosSelecionados.length === 0 || cbosSelecionados.includes(item.cbo);
+        
+        return passaUnidade && passaCBO;
     });
     
     atualizarGraficos(filtroMes);
@@ -207,9 +224,13 @@ function aplicarFiltros() {
 
 function atualizarDados() {
     dadosFiltrados = [...dadosOriginais];
-    document.getElementById('filtroUnidade').value = '';
-    document.getElementById('filtroCBO').value = '';
-    document.getElementById('filtroMes').value = '';
+    
+    // Desmarcar todos os checkboxes
+    document.querySelectorAll(".checkbox-filtro").forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById("filtroMes").value = "";
+    
     atualizarGraficos();
     atualizarTotal();
 }
@@ -231,7 +252,7 @@ function atualizarTotal(filtroMes = '') {
 function atualizarGraficos(filtroMes = '') {
     criarGraficoUnidades(filtroMes);
     criarGraficoMeses(filtroMes);
-    criarGraficoCBOs(filtroMes);
+    criarTabelaCBOs(filtroMes);
 }
 
 function criarGraficoUnidades(filtroMes = '') {
@@ -436,9 +457,7 @@ function criarGraficoMeses(filtroMes = '') {
     });
 }
 
-function criarGraficoCBOs(filtroMes = '') {
-    const ctx = document.getElementById('chartCBOs').getContext('2d');
-    
+function criarTabelaCBOs(filtroMes = '') {
     // Calcular totais por CBO
     const totaisPorCBO = {};
     dadosFiltrados.forEach(item => {
@@ -460,68 +479,19 @@ function criarGraficoCBOs(filtroMes = '') {
         .filter(([,total]) => total > 0)
         .sort(([,a], [,b]) => b - a);
     
-    const labels = ordenados.map(([cbo]) => cbo);
-    const dados = ordenados.map(([,total]) => total);
+    // Limpar tabela
+    const corpoTabela = document.getElementById('corpoTabelaCBOs');
+    corpoTabela.innerHTML = '';
     
-    if (chartCBOs) {
-        chartCBOs.destroy();
-    }
-    
-    chartCBOs = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Total de Atendimentos',
-                data: dados,
-                backgroundColor: 'rgba(249, 115, 22, 0.8)',
-                borderColor: 'rgba(249, 115, 22, 1)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            plugins: {
-                legend: {
-                    display: false
-                },
-                datalabels: {
-                    anchor: 'end',
-                    align: 'right',
-                    color: '#333',
-                    font: {
-                        weight: 'bold',
-                        size: 14
-                    },
-                    formatter: function(value) {
-                        return value.toLocaleString('pt-BR');
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString('pt-BR');
-                        },
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                y: {
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
-        }
+    // Popular tabela
+    ordenados.forEach(([cbo, total], index) => {
+        const linha = document.createElement('tr');
+        linha.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+        linha.innerHTML = `
+            <td class="px-4 py-3 text-left font-medium text-gray-800">${cbo}</td>
+            <td class="px-4 py-3 text-center font-bold text-blue-600">${total.toLocaleString('pt-BR')}</td>
+        `;
+        corpoTabela.appendChild(linha);
     });
 }
 
