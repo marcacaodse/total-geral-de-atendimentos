@@ -14,7 +14,7 @@
 <body class="bg-gray-50 min-h-screen">
 
 <div class="container mx-auto px-4 py-6">
-    <!-- Cabeçalho -->
+    <!-- Header -->
     <div class="gradient-bg text-white text-center py-8 rounded-2xl mb-8 card-shadow">
         <h1 class="text-4xl font-bold mb-2">
             <i class="fas fa-hospital-alt mr-3"></i>
@@ -25,7 +25,7 @@
         <p class="text-sm opacity-70">Painel criado por: Ana P. A. Silva/Suporte Sistema Vivver/Distrito Sanitário Eldorado</p>
     </div>
 
-    <!-- Total de Atendimentos -->
+    <!-- Total Atendimentos -->
     <div class="total-display">
         <div class="text-2xl mb-2 title-text">
             <i class="fas fa-users mr-3"></i>
@@ -61,7 +61,7 @@
 
             <!-- Filtro por Unidade -->
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Unidade de Saúde (Múltipla Seleção )</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Unidade de Saúde (Múltipla Seleção)</label>
                 <div class="border border-gray-300 rounded-lg p-2 h-32 overflow-y-auto bg-white">
                     <div id="checkboxUnidades" class="space-y-1">
                         <!-- Checkboxes serão inseridos via JavaScript -->
@@ -72,4 +72,77 @@
 
             <!-- Filtro por CBO -->
             <div>
- 
+                <label class="block text-sm font-semibold text-gray-700 mb-2">CBO (Profissão) - Múltipla Seleção</label>
+                <div class="border border-gray-300 rounded-lg p-2 h-32 overflow-y-auto bg-white">
+                    <div id="checkboxCBOs" class="space-y-1">
+                        <!-- Checkboxes serão inseridos via JavaScript -->
+                    </div>
+                </div>
+                <small class="text-gray-500 text-xs mt-1 block">Clique nas caixinhas para selecionar múltiplos itens</small>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="flex flex-col gap-2">
+                <button id="btnAtualizar" class="filter-btn bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 text-sm">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Atualizar
+                </button>
+                <button id="btnLimpar" class="filter-btn bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-all duration-300 text-sm">
+                    <i class="fas fa-eraser mr-2"></i>
+                    Limpar Filtros
+                </button>
+                <button id="btnDownload" class="filter-btn bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300 text-sm">
+                    <i class="fas fa-download mr-2"></i>
+                    Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Ranking por Unidade -->
+        <div class="bg-white rounded-2xl p-6 card-shadow">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-trophy mr-3 text-yellow-500"></i>
+                Top 10 Unidades - Atendimentos
+            </h3>
+            <div class="chart-container">
+                <canvas id="chartUnidades"></canvas>
+            </div>
+        </div>
+
+        <!-- Total por Mês -->
+        <div class="bg-white rounded-2xl p-6 card-shadow">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-calendar-alt mr-3 text-green-500"></i>
+                Atendimentos por Mês
+            </h3>
+            <div class="chart-container">
+                <canvas id="chartMeses"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela CBO - Largura Total -->
+    <div class="bg-white rounded-2xl p-6 card-shadow">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-user-md mr-3 text-purple-500"></i>
+            Total de Atendimentos por CBO (Categoria Profissional)
+        </h3>
+        <div class="overflow-x-auto">
+            <table id="tabelaCBOs" class="w-full table-auto">
+                <thead>
+                    <!-- Cabeçalhos serão inseridos dinamicamente via JavaScript -->
+                </thead>
+                <tbody id="corpoTabelaCBOs">
+                    <!-- Dados serão inseridos via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="script_reintegrated.js"></script>
+</body>
+</html>
