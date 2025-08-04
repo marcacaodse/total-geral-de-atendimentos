@@ -242,6 +242,3 @@ function downloadExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Atendimentos por CBO");
     XLSX.writeFile(wb, "Atendimentos_Distrito_Eldorado.xlsx");
 }
-
-
-
