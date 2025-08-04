@@ -585,3 +585,4 @@ function downloadExcel() {
     // Fazer download
     XLSX.writeFile(wb, "atendimentos_distrito_eldorado.xlsx");
 }
+
