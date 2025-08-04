@@ -571,3 +571,4 @@ function downloadExcel() {
 
     XLSX.writeFile(wb, "relatorio_atendimentos.xlsx");
 }
+
