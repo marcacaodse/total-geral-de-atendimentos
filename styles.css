@@ -38,20 +38,9 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-.filter-btn.active {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-}
-
 .chart-container {
     position: relative;
     height: 450px;
-    width: 100%;
-}
-
-.chart-container-large {
-    position: relative;
-    height: 600px;
     width: 100%;
 }
 
@@ -62,69 +51,13 @@
     body { 
         background: white !important; 
     }
-    .gradient-bg { 
-        background: #667eea !important; 
-    }
-    .total-display { 
-        background: #4facfe !important; 
-    }
-    .container { 
-        max-width: none !important; 
-    }
-    .grid { 
-        page-break-inside: avoid; 
+    .gradient-bg, .total-display { 
+        background: #fff !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
     }
 }
-
-/* Otimizações para PDF */
-body {
-    overflow-x: hidden;
-}
-
-.container {
-    max-width: 100%;
-    padding: 0 20px;
-}
-
-.grid {
-    display: grid;
-    gap: 1.5rem;
-}
-
-.grid-cols-1 {
-    grid-template-columns: 1fr;
-}
-
-.lg\:grid-cols-2 {
-    grid-template-columns: 1fr 1fr;
-}
-
-.md\:grid-cols-2 {
-    grid-template-columns: 1fr 1fr;
-}
-
-.lg\:grid-cols-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-@media (max-width: 1024px) {
-    .lg\:grid-cols-2 {
-        grid-template-columns: 1fr;
-    }
-    .lg\:grid-cols-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .md\:grid-cols-2 {
-        grid-template-columns: 1fr;
-    }
-    .lg\:grid-cols-4 {
-        grid-template-columns: 1fr;
-    }
-}
-
 
 /* Estilos para a tabela de CBOs */
 #tabelaCBOs {
@@ -134,114 +67,4 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#tabelaCBOs th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: none;
-}
-
-#tabelaCBOs td {
-    border-bottom: 1px solid #e5e7eb;
-    transition: background-color 0.2s ease;
-}
-
-#tabelaCBOs tr:hover {
-    background-color: #f3f4f6 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#tabelaCBOs tr:last-child td {
-    border-bottom: none;
-}
-
-/* Responsividade da tabela */
-@media (max-width: 768px) {
-    #tabelaCBOs {
-        font-size: 14px;
-    }
-    
-    #tabelaCBOs th,
-    #tabelaCBOs td {
-        padding: 8px 12px;
-    }
-}
-
-
-
-/* Estilos para checkboxes personalizados */
-.checkbox-filtro {
-    appearance: none;
-    background-color: #ffffff;
-    border: 2px solid #d1d5db;
-    border-radius: 4px;
-    width: 16px;
-    height: 16px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.checkbox-filtro:checked {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-}
-
-.checkbox-filtro:checked::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.checkbox-filtro:hover {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.checkbox-filtro:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-}
-
-/* Container dos checkboxes */
-#checkboxUnidades, #checkboxCBOs {
-    max-height: 128px;
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e0 #f7fafc;
-}
-
-#checkboxUnidades::-webkit-scrollbar, #checkboxCBOs::-webkit-scrollbar {
-    width: 6px;
-}
-
-#checkboxUnidades::-webkit-scrollbar-track, #checkboxCBOs::-webkit-scrollbar-track {
-    background: #f7fafc;
-    border-radius: 3px;
-}
-
-#checkboxUnidades::-webkit-scrollbar-thumb, #checkboxCBOs::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 3px;
-}
-
-#checkboxUnidades::-webkit-scrollbar-thumb:hover, #checkboxCBOs::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
-}
-
-/* Hover effect para as linhas dos checkboxes */
-#checkboxUnidades > div:hover, #checkboxCBOs > div:hover {
-    background-color: #f8fafc;
-    border-radius: 4px;
-    padding: 2px 4px;
-    margin: -2px -4px;
-}
-
+#tabelaCBOs 
