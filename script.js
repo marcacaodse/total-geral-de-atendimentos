@@ -147,7 +147,7 @@ let dadosFiltrados = [...dadosOriginais];
 let chartUnidades, chartMeses, chartCBOs;
 
 // Inicialização
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function() {
     Chart.register(ChartDataLabels);
     
     popularFiltros();
@@ -164,256 +164,180 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function popularFiltros() {
-    // Obter listas únicas
+    // Obter lista de unidades únicas
     const unidades = [...new Set(dadosOriginais.map(item => item.unidade))].sort();
-    const cbos = [...new Set(dadosOriginais.map(item => item.cbo))].sort();
-    
-    // Popular checkboxes de unidades
-    const containerUnidades = document.getElementById('checkboxUnidades');
+    const checkboxUnidades = document.getElementById("checkboxUnidades");
+    checkboxUnidades.innerHTML = ""; // Limpar antes de popular
     unidades.forEach(unidade => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center space-x-2';
+        const div = document.createElement("div");
+        div.className = "flex items-center";
         div.innerHTML = `
-            <input type="checkbox" id="unidade_${unidade}" value="${unidade}" class="checkbox-unidade rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-            <label for="unidade_${unidade}" class="text-sm text-gray-700 cursor-pointer">${unidade}</label>
+            <input type="checkbox" id="unidade_${unidade.replace(/\s/g, ".")}" value="${unidade}" class="form-checkbox h-4 w-4 text-blue-600">
+            <label for="unidade_${unidade.replace(/\s/g, ".")}" class="ml-2 text-gray-700 text-sm">${unidade}</label>
         `;
-        containerUnidades.appendChild(div);
+        checkboxUnidades.appendChild(div);
     });
-    
-    // Popular checkboxes de CBOs
-    const containerCBOs = document.getElementById('checkboxCBOs');
+
+    // Obter lista de CBOs únicas
+    const cbos = [...new Set(dadosOriginais.map(item => item.cbo))].sort();
+    const checkboxCBOs = document.getElementById("checkboxCBOs");
+    checkboxCBOs.innerHTML = ""; // Limpar antes de popular
     cbos.forEach(cbo => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center space-x-2';
+        const div = document.createElement("div");
+        div.className = "flex items-center";
         div.innerHTML = `
-            <input type="checkbox" id="cbo_${cbo}" value="${cbo}" class="checkbox-cbo rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-            <label for="cbo_${cbo}" class="text-sm text-gray-700 cursor-pointer">${cbo}</label>
+            <input type="checkbox" id="cbo_${cbo.replace(/\s/g, ".")}" value="${cbo}" class="form-checkbox h-4 w-4 text-blue-600">
+            <label for="cbo_${cbo.replace(/\s/g, ".")}" class="ml-2 text-gray-700 text-sm">${cbo}</label>
         `;
-        containerCBOs.appendChild(div);
+        checkboxCBOs.appendChild(div);
     });
 }
 
 function aplicarFiltros() {
-    // Obter filtros selecionados
-    const unidadesSelecionadas = Array.from(document.querySelectorAll('.checkbox-unidade:checked')).map(cb => cb.value);
-    const cbosSelecionados = Array.from(document.querySelectorAll('.checkbox-cbo:checked')).map(cb => cb.value);
-    const mesSelecionado = document.getElementById('filtroMes').value;
-    
-    // Aplicar filtros
+    const unidadesSelecionadas = Array.from(document.querySelectorAll("input[id^=\'unidade_\']:checked")).map(cb => cb.value);
+    const cbosSelecionados = Array.from(document.querySelectorAll("input[id^=\'cbo_\']:checked")).map(cb => cb.value);
+    const mesSelecionado = document.getElementById("filtroMes").value;
+
     dadosFiltrados = dadosOriginais.filter(item => {
-        const passaUnidade = unidadesSelecionadas.length === 0 || unidadesSelecionadas.includes(item.unidade);
-        const passaCBO = cbosSelecionados.length === 0 || cbosSelecionados.includes(item.cbo);
-        return passaUnidade && passaCBO;
+        const unidadeMatch = unidadesSelecionadas.length === 0 || unidadesSelecionadas.includes(item.unidade);
+        const cboMatch = cbosSelecionados.length === 0 || cbosSelecionados.includes(item.cbo);
+        return unidadeMatch && cboMatch;
     });
-    
-    // Atualizar visualizações
+
     atualizarGraficos(mesSelecionado);
     atualizarTotal(mesSelecionado);
     criarTabelaCBOs(mesSelecionado);
 }
 
 function atualizarDados() {
-    // Limpar todos os filtros
-    document.querySelectorAll('.checkbox-unidade').forEach(cb => cb.checked = false);
-    document.querySelectorAll('.checkbox-cbo').forEach(cb => cb.checked = false);
-    document.getElementById('filtroMes').value = '';
-    
-    // Resetar dados
+    // Limpar seleções de filtros
+    document.querySelectorAll("input[id^=\'unidade_\']").forEach(cb => cb.checked = false);
+    document.querySelectorAll("input[id^=\'cbo_\']").forEach(cb => cb.checked = false);
+    document.getElementById("filtroMes").value = "";
+
     dadosFiltrados = [...dadosOriginais];
-    
-    // Atualizar visualizações
     atualizarGraficos();
     atualizarTotal();
     criarTabelaCBOs();
 }
 
-function atualizarGraficos(filtroMes = '') {
-    criarGraficoUnidades(filtroMes);
-    criarGraficoMeses(filtroMes);
-}
-
-function atualizarTotal(filtroMes = '') {
+function atualizarTotal(mes = "") {
     let total = 0;
-    
-    if (filtroMes) {
-        total = dadosFiltrados.reduce((sum, item) => sum + item[filtroMes], 0);
-    } else {
-        total = dadosFiltrados.reduce((sum, item) => {
-            return sum + item.jan + item.fev + item.mar + item.abr + item.mai + item.jun;
-        }, 0);
-    }
-    
-    document.getElementById('totalAtendimentos').textContent = total.toLocaleString('pt-BR');
+    dadosFiltrados.forEach(item => {
+        if (mes) {
+            total += item[mes];
+        } else {
+            total += item.jan + item.fev + item.mar + item.abr + item.mai + item.jun;
+        }
+    });
+    document.getElementById("totalAtendimentos").textContent = total.toLocaleString("pt-BR");
 }
 
-function criarGraficoUnidades(filtroMes = '') {
-    const ctx = document.getElementById('chartUnidades').getContext('2d');
-    
-    // Calcular totais por unidade
-    const totaisPorUnidade = {};
+function atualizarGraficos(mes = "") {
+    // Destruir gráficos existentes para evitar sobreposição
+    if (chartUnidades) chartUnidades.destroy();
+    if (chartMeses) chartMeses.destroy();
+
+    // Dados para o gráfico de unidades
+    const dadosUnidades = {};
     dadosFiltrados.forEach(item => {
-        let total = 0;
-        if (filtroMes) {
-            total = item[filtroMes];
+        if (!dadosUnidades[item.unidade]) {
+            dadosUnidades[item.unidade] = 0;
+        }
+        if (mes) {
+            dadosUnidades[item.unidade] += item[mes];
         } else {
-            total = item.jan + item.fev + item.mar + item.abr + item.mai + item.jun;
+            dadosUnidades[item.unidade] += item.jan + item.fev + item.mar + item.abr + item.mai + item.jun;
         }
-        
-        if (!totaisPorUnidade[item.unidade]) {
-            totaisPorUnidade[item.unidade] = 0;
-        }
-        totaisPorUnidade[item.unidade] += total;
     });
-    
-    // Ordenar e pegar top 10
-    const ordenados = Object.entries(totaisPorUnidade)
-        .filter(([,total]) => total > 0)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 10);
-    
-    const labels = ordenados.map(([unidade,]) => unidade);
-    const dados = ordenados.map(([,total]) => total);
-    
-    if (chartUnidades) {
-        chartUnidades.destroy();
-    }
-    
-    chartUnidades = new Chart(ctx, {
-        type: 'bar',
+
+    const unidadesOrdenadas = Object.entries(dadosUnidades)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10); // Top 10
+
+    const labelsUnidades = unidadesOrdenadas.map(item => item[0]);
+    const valoresUnidades = unidadesOrdenadas.map(item => item[1]);
+
+    // Criar gráfico de unidades
+    const ctxUnidades = document.getElementById("chartUnidades").getContext("2d");
+    chartUnidades = new Chart(ctxUnidades, {
+        type: "bar",
         data: {
-            labels: labels,
+            labels: labelsUnidades,
             datasets: [{
-                data: dados,
-                backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                borderColor: 'rgba(34, 197, 94, 1)',
+                label: "Total de Atendimentos",
+                data: valoresUnidades,
+                backgroundColor: "#ef4444", // Tailwind red-500
+                borderColor: "#dc2626",
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
             plugins: {
                 legend: {
                     display: false
                 },
                 datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    color: '#333',
-                    font: {
-                        weight: 'bold',
-                        size: 14
-                    },
+                    anchor: "end",
+                    align: "top",
                     formatter: function(value) {
-                        return value.toLocaleString('pt-BR');
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString('pt-BR');
-                        },
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                x: {
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 45,
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-function criarGraficoMeses(filtroMes = '') {
-    const ctx = document.getElementById('chartMeses').getContext('2d');
-    
-    if (filtroMes) {
-        // Se há filtro por mês, mostrar apenas esse mês
-        const total = dadosFiltrados.reduce((sum, item) => sum + item[filtroMes], 0);
-        const nomesMeses = {
-            jan: 'Janeiro', fev: 'Fevereiro', mar: 'Março',
-            abr: 'Abril', mai: 'Maio', jun: 'Junho'
-        };
-        
-        if (chartMeses) {
-            chartMeses.destroy();
-        }
-        
-        chartMeses = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: [nomesMeses[filtroMes]],
-                datasets: [{
-                    data: [total],
-                    backgroundColor: ['rgba(236, 72, 153, 0.8)'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 14,
-                                weight: 'bold'
-                            }
-                        }
+                        return value.toLocaleString("pt-BR");
                     },
-                    datalabels: {
-                        color: 'white',
-                        font: {
-                            weight: 'bold',
-                            size: 16
-                        },
-                        formatter: function(value) {
-                            return value.toLocaleString('pt-BR');
-                        }
+                    color: "#4a5568",
+                    font: {
+                        weight: "bold"
                     }
                 }
             }
-        });
-        return;
-    }
-    
-    const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun'];
-    const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'];
-    
-    const totaisPorMes = meses.map(mes => {
-        return dadosFiltrados.reduce((sum, item) => sum + item[mes], 0);
+        }
     });
-    
-    if (chartMeses) {
-        chartMeses.destroy();
-    }
-    
-    chartMeses = new Chart(ctx, {
-        type: 'doughnut',
+
+    // Dados para o gráfico de meses
+    const dadosMeses = {
+        jan: 0,
+        fev: 0,
+        mar: 0,
+        abr: 0,
+        mai: 0,
+        jun: 0
+    };
+
+    dadosFiltrados.forEach(item => {
+        dadosMeses.jan += item.jan;
+        dadosMeses.fev += item.fev;
+        dadosMeses.mar += item.mar;
+        dadosMeses.abr += item.abr;
+        dadosMeses.mai += item.mai;
+        dadosMeses.jun += item.jun;
+    });
+
+    const labelsMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
+    const valoresMeses = Object.values(dadosMeses);
+
+    // Criar gráfico de meses
+    const ctxMeses = document.getElementById("chartMeses").getContext("2d");
+    chartMeses = new Chart(ctxMeses, {
+        type: "doughnut",
         data: {
-            labels: nomesMeses,
+            labels: labelsMeses,
             datasets: [{
-                data: totaisPorMes,
+                data: valoresMeses,
                 backgroundColor: [
-                    'rgba(236, 72, 153, 0.8)',
-                    'rgba(59, 130, 246, 0.8)',
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                    'rgba(139, 92, 246, 0.8)',
-                    'rgba(239, 68, 68, 0.8)'
+                    "#f6e0ea", // Pink-100
+                    "#bee3f8", // Blue-200
+                    "#b2f5ea", // Teal-200
+                    "#fbd38d", // Orange-200
+                    "#d6bcfa", // Purple-200
+                    "#feb2b2"  // Red-200
                 ],
+                borderColor: "#ffffff",
                 borderWidth: 2
             }]
         },
@@ -422,26 +346,19 @@ function criarGraficoMeses(filtroMes = '') {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom',
-                    labels: {
-                        font: {
-                            size: 14,
-                            weight: 'bold'
-                        }
-                    }
+                    position: "bottom"
                 },
                 datalabels: {
-                    color: 'white',
-                    font: {
-                        weight: 'bold',
-                        size: 14
-                    },
+                    color: "#4a5568",
                     formatter: function(value, context) {
                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
                         const percentage = ((value / total) * 100).toFixed(1);
-                        const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+                        const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
                         const nomeMes = nomesMeses[context.dataIndex];
-                        return value > 0 ? `${nomeMes}\n${value.toLocaleString('pt-BR')}\n(${percentage}%)` : '';
+                        return value > 0 ? `${nomeMes}\n${value.toLocaleString("pt-BR")}\n(${percentage}%)` : "";
+                    },
+                    font: {
+                        weight: "bold"
                     }
                 }
             }
@@ -449,8 +366,8 @@ function criarGraficoMeses(filtroMes = '') {
     });
 }
 
-function criarTabelaCBOs(filtroMes = '') {
-    // Obter unidades únicas dos dados filtrados
+function criarTabelaCBOs(filtroMes = "") {
+    // Obter unidades únicas dos dados filtrados com ordenação personalizada
     const unidadesUnicas = [...new Set(dadosFiltrados.map(item => item.unidade))].sort((a, b) => {
         const romanToNumber = (roman) => {
             const map = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10, XI: 11, XII: 12, XIII: 13, XIV: 14, XV: 15 };
@@ -562,27 +479,95 @@ function criarTabelaCBOs(filtroMes = '') {
 }
 
 function downloadExcel() {
-    // Preparar dados para exportação
-    const dadosParaExportar = dadosFiltrados.map(item => ({
-        'Unidade': item.unidade,
-        'CBO': item.cbo,
-        'Janeiro': item.jan,
-        'Fevereiro': item.fev,
-        'Março': item.mar,
-        'Abril': item.abr,
-        'Maio': item.mai,
-        'Junho': item.jun,
-        'Total': item.jan + item.fev + item.mar + item.abr + item.mai + item.jun
-    }));
-    
-    // Criar workbook
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dadosParaExportar);
-    
-    // Adicionar worksheet ao workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Atendimentos");
-    
-    // Fazer download
-    XLSX.writeFile(wb, "atendimentos_distrito_eldorado.xlsx");
-}
 
+    // Dados para a aba "Atendimentos por CBO"
+    const dadosCBOExcel = [];
+    const unidadesUnicas = [...new Set(dadosOriginais.map(item => item.unidade))].sort();
+    const cabecalhoCBO = ["CBO (Categoria Profissional)", ...unidadesUnicas, "Total"];
+    dadosCBOExcel.push(cabecalhoCBO);
+
+    const dadosPorCBO = {};
+    dadosOriginais.forEach(item => {
+        if (!dadosPorCBO[item.cbo]) {
+            dadosPorCBO[item.cbo] = {};
+            unidadesUnicas.forEach(unidade => {
+                dadosPorCBO[item.cbo][unidade] = 0;
+            });
+            dadosPorCBO[item.cbo].total = 0;
+        }
+        const valor = item.jan + item.fev + item.mar + item.abr + item.mai + item.jun;
+        dadosPorCBO[item.cbo][item.unidade] += valor;
+        dadosPorCBO[item.cbo].total += valor;
+    });
+
+    Object.entries(dadosPorCBO)
+        .filter(([, dados]) => dados.total > 0)
+        .sort(([, a], [, b]) => b.total - a.total)
+        .forEach(([cbo, dados]) => {
+            const linha = [cbo];
+            unidadesUnicas.forEach(unidade => {
+                linha.push(dados[unidade] || 0);
+            });
+            linha.push(dados.total);
+            dadosCBOExcel.push(linha);
+        });
+
+    const wsCBO = XLSX.utils.aoa_to_sheet(dadosCBOExcel);
+    XLSX.utils.book_append_sheet(wb, wsCBO, "Atendimentos por CBO");
+
+    // Dados para a aba "Atendimentos por Mês"
+    const dadosMesesExcel = [];
+    const cabecalhoMeses = ["Mês", "Total de Atendimentos"];
+    dadosMesesExcel.push(cabecalhoMeses);
+
+    const dadosMeses = {
+        jan: 0,
+        fev: 0,
+        mar: 0,
+        abr: 0,
+        mai: 0,
+        jun: 0
+    };
+
+    dadosOriginais.forEach(item => {
+        dadosMeses.jan += item.jan;
+        dadosMeses.fev += item.fev;
+        dadosMeses.mar += item.mar;
+        dadosMeses.abr += item.abr;
+        dadosMeses.mai += item.mai;
+        dadosMeses.jun += item.jun;
+    });
+
+    const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
+    Object.values(dadosMeses).forEach((valor, index) => {
+        dadosMesesExcel.push([nomesMeses[index], valor]);
+    });
+
+    const wsMeses = XLSX.utils.aoa_to_sheet(dadosMesesExcel);
+    XLSX.utils.book_append_sheet(wb, wsMeses, "Atendimentos por Mês");
+
+    // Dados para a aba "Atendimentos por Unidade"
+    const dadosUnidadesExcel = [];
+    const cabecalhoUnidades = ["Unidade", "Total de Atendimentos"];
+    dadosUnidadesExcel.push(cabecalhoUnidades);
+
+    const dadosUnidades = {};
+    dadosOriginais.forEach(item => {
+        if (!dadosUnidades[item.unidade]) {
+            dadosUnidades[item.unidade] = 0;
+        }
+        dadosUnidades[item.unidade] += item.jan + item.fev + item.mar + item.abr + item.mai + item.jun;
+    });
+
+    Object.entries(dadosUnidades)
+        .sort(([, a], [, b]) => b - a)
+        .forEach(([unidade, total]) => {
+            dadosUnidadesExcel.push([unidade, total]);
+        });
+
+    const wsUnidades = XLSX.utils.aoa_to_sheet(dadosUnidadesExcel);
+    XLSX.utils.book_append_sheet(wb, wsUnidades, "Atendimentos por Unidade");
+
+    XLSX.writeFile(wb, "relatorio_atendimentos.xlsx");
+}
