@@ -193,6 +193,7 @@ function filtrarDados() {
     console.log("Dados filtrados:", dadosFiltrados.length, "registros");
     calcularTotalAtendimentos();
     atualizarGraficos();
+    atualizarTabelaCBOs(); // Adicionado para garantir que a tabela seja atualizada
 }
 
 function atualizarGraficos() {
@@ -482,6 +483,18 @@ function popularFiltros() {
     });
 
     console.log("Filtros populados com sucesso!");
+
+    // Adicionar event listeners para atualização automática
+    document.getElementById("filtroMes").addEventListener("change", filtrarDados);
+    // Adicionar event listeners para os checkboxes de unidade e CBO
+    // Estes listeners precisam ser adicionados APÓS os elementos serem criados no DOM
+    // Portanto, eles são movidos para dentro da função popularFiltros
+    document.querySelectorAll("input[name=\'unidade\"]").forEach(cb => {
+        cb.addEventListener("change", filtrarDados);
+    });
+    document.querySelectorAll("input[name=\'cbo\"]").forEach(cb => {
+        cb.addEventListener("change", filtrarDados);
+    });
 }
 
 // Event Listeners
@@ -490,42 +503,42 @@ document.addEventListener("DOMContentLoaded", () => {
     
     try {
         popularFiltros();
-        calcularTotalAtendimentos();
-        atualizarGraficos();
+        // Remover event listener do botão Atualizar, pois a atualização será automática
+        const btnAtualizar = document.getElementById("btnAtualizar");
+        if (btnAtualizar) {
+            btnAtualizar.removeEventListener("click", filtrarDados);
+            console.log("Event listener do botão Atualizar removido");
+        }
+
+        const btnLimpar = document.getElementById("btnLimpar");
+        if (btnLimpar) {
+            btnLimpar.addEventListener("click", () => {
+                console.log("Limpando filtros...");
+                document.getElementById("filtroMes").value = "";
+                document.querySelectorAll("input[name=\'unidade\"]").forEach(cb => cb.checked = false);
+                document.querySelectorAll("input[name=\'cbo\"]").forEach(cb => cb.checked = false);
+                dadosFiltrados = [...dadosOriginais];
+                calcularTotalAtendimentos();
+                atualizarGraficos();
+                atualizarTabelaCBOs(); // Adicionado para garantir que a tabela seja atualizada ao limpar
+            });
+            console.log("Event listener do botão Limpar adicionado");
+        }
+        
+        const btnDownload = document.getElementById("btnDownload");
+        if (btnDownload) {
+            btnDownload.addEventListener("click", () => {
+                alert("Funcionalidade de download em desenvolvimento!");
+            });
+            console.log("Event listener do botão Download adicionado");
+        }
+
+        // Chamar filtrarDados() para carregar os dados iniciais e renderizar tudo
+        filtrarDados();
         
         console.log("Aplicação inicializada com sucesso!");
     } catch (error) {
         console.error("Erro na inicialização:", error);
-    }
-
-    // Adicionar event listeners aos botões
-    const btnAtualizar = document.getElementById("btnAtualizar");
-    const btnLimpar = document.getElementById("btnLimpar");
-    const btnDownload = document.getElementById("btnDownload");
-
-    if (btnAtualizar) {
-        btnAtualizar.addEventListener("click", filtrarDados);
-        console.log("Event listener do botão Atualizar adicionado");
-    }
-
-    if (btnLimpar) {
-        btnLimpar.addEventListener("click", () => {
-            console.log("Limpando filtros...");
-            document.getElementById("filtroMes").value = "";
-            document.querySelectorAll("input[name=\'unidade\"]").forEach(cb => cb.checked = false);
-            document.querySelectorAll("input[name=\'cbo\"]").forEach(cb => cb.checked = false);
-            dadosFiltrados = [...dadosOriginais];
-            calcularTotalAtendimentos();
-            atualizarGraficos();
-        });
-        console.log("Event listener do botão Limpar adicionado");
-    }
-    
-    if (btnDownload) {
-        btnDownload.addEventListener("click", () => {
-            alert("Funcionalidade de download em desenvolvimento!");
-        });
-        console.log("Event listener do botão Download adicionado");
     }
 });
 
