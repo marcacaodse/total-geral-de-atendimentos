@@ -200,8 +200,8 @@ function popularFiltros() {
 
 function aplicarFiltros() {
     const filtroMes = document.getElementById("filtroMes").value;
-    const unidadesSelecionadas = Array.from(document.querySelectorAll("#checkboxUnidades input[type='checkbox']:checked")).map(cb => cb.value);
-    const cbosSelecionados = Array.from(document.querySelectorAll("#checkboxCBOs input[type='checkbox']:checked")).map(cb => cb.value);
+    const unidadesSelecionadas = Array.from(document.querySelectorAll("#checkboxUnidades input[type=\'checkbox\']:checked")).map(cb => cb.value);
+    const cbosSelecionados = Array.from(document.querySelectorAll("#checkboxCBOs input[type=\'checkbox\']:checked")).map(cb => cb.value);
 
     dadosFiltrados = dadosOriginais.filter(dado => {
         const mesValido = filtroMes === "" || dado[filtroMes] > 0;
@@ -217,8 +217,8 @@ function aplicarFiltros() {
 function atualizarDados() {
     // Limpar filtros
     document.getElementById("filtroMes").value = "";
-    document.querySelectorAll("#checkboxUnidades input[type='checkbox']").forEach(cb => cb.checked = false);
-    document.querySelectorAll("#checkboxCBOs input[type='checkbox']").forEach(cb => cb.checked = false);
+    document.querySelectorAll("#checkboxUnidades input[type=\'checkbox\']").forEach(cb => cb.checked = false);
+    document.querySelectorAll("#checkboxCBOs input[type=\'checkbox\']").forEach(cb => cb.checked = false);
     
     dadosFiltrados = [...dadosOriginais];
     atualizarGraficos();
@@ -261,8 +261,8 @@ function atualizarGraficos() {
             datasets: [{
                 label: "Total de Atendimentos",
                 data: dataUnidades,
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-                borderColor: "rgba(75, 192, 192, 1)",
+                backgroundColor: "rgba(255, 99, 132, 0.6)", // Cor vermelha
+                borderColor: "rgba(255, 99, 132, 1)",
                 borderWidth: 1
             }]
         },
@@ -312,19 +312,29 @@ function atualizarGraficos() {
     const labelsMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
     const dataMeses = [dadosMeses.jan, dadosMeses.fev, dadosMeses.mar, dadosMeses.abr, dadosMeses.mai, dadosMeses.jun];
 
-    // Gráfico de Meses
+    const totalGeralMeses = dataMeses.reduce((sum, val) => sum + val, 0);
+
+    const backgroundColors = [
+        "rgba(255, 99, 132, 0.8)", // Janeiro - Vermelho
+        "rgba(54, 162, 235, 0.8)", // Fevereiro - Azul
+        "rgba(255, 206, 86, 0.8)", // Março - Amarelo
+        "rgba(75, 192, 192, 0.8)", // Abril - Verde Água
+        "rgba(153, 102, 255, 0.8)", // Maio - Roxo
+        "rgba(255, 159, 64, 0.8)"  // Junho - Laranja
+    ];
+
+    // Gráfico de Meses (Rosca)
     const ctxMeses = document.getElementById("chartMeses").getContext("2d");
     chartMeses = new Chart(ctxMeses, {
-        type: "line",
+        type: "doughnut", // Alterado para gráfico de rosca
         data: {
             labels: labelsMeses,
             datasets: [{
                 label: "Total de Atendimentos",
                 data: dataMeses,
-                backgroundColor: "rgba(153, 102, 255, 0.6)",
-                borderColor: "rgba(153, 102, 255, 1)",
-                borderWidth: 1,
-                fill: false
+                backgroundColor: backgroundColors,
+                borderColor: "#fff",
+                borderWidth: 2
             }]
         },
         options: {
@@ -332,28 +342,18 @@ function atualizarGraficos() {
             maintainAspectRatio: false,
             plugins: {
                 datalabels: {
-                    anchor: "end",
-                    align: "top",
-                    formatter: (value) => value.toLocaleString("pt-BR"),
-                    color: "#444",
+                    formatter: (value, ctx) => {
+                        let percentage = (value * 100 / totalGeralMeses).toFixed(1) + "%";
+                        return ctx.chart.data.labels[ctx.dataIndex] + "\n" + value.toLocaleString("pt-BR") + "\n" + percentage;
+                    },
+                    color: "#fff",
                     font: {
-                        weight: "bold"
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: "Número de Atendimentos"
+                        weight: "bold",
+                        size: 12
                     }
                 },
-                x: {
-                    title: {
-                        display: true,
-                        text: "Mês"
-                    }
+                legend: {
+                    position: "top",
                 }
             }
         }
@@ -446,4 +446,5 @@ function downloadExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Atendimentos por CBO");
     XLSX.writeFile(wb, "Atendimentos_Distrito_Eldorado.xlsx");
 }
+
 
