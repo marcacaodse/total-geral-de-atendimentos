@@ -157,17 +157,23 @@ let chartMeses = null;
 // Registrar o plugin datalabels globalmente
 Chart.register(ChartDataLabels);
 
+console.log("Script carregado. Total de registros:", dadosOriginais.length);
+
 function calcularTotalAtendimentos() {
     const total = dadosFiltrados.reduce((acc, dado) => {
         return acc + dado.jan + dado.fev + dado.mar + dado.abr + dado.mai + dado.jun;
     }, 0);
+    console.log("Total calculado:", total);
     document.getElementById("totalAtendimentos").textContent = total.toLocaleString("pt-BR");
 }
 
 function filtrarDados() {
+    console.log("Iniciando filtro de dados...");
     const mesSelecionado = document.getElementById("filtroMes").value;
-    const unidadesSelecionadas = Array.from(document.querySelectorAll("input[name=\'unidade\']:checked")).map(cb => cb.value);
-    const cboSelecionados = Array.from(document.querySelectorAll("input[name=\'cbo\']:checked")).map(cb => cb.value);
+    const unidadesSelecionadas = Array.from(document.querySelectorAll("input[name=\'unidade\"]:checked")).map(cb => cb.value);
+    const cboSelecionados = Array.from(document.querySelectorAll("input[name=\'cbo\"]:checked")).map(cb => cb.value);
+
+    console.log("Filtros aplicados:", { mesSelecionado, unidadesSelecionadas, cboSelecionados });
 
     dadosFiltrados = dadosOriginais.filter(dado => {
         const mesCorresponde = mesSelecionado === "" || 
@@ -184,11 +190,14 @@ function filtrarDados() {
         return mesCorresponde && unidadeCorresponde && cboCorresponde;
     });
 
+    console.log("Dados filtrados:", dadosFiltrados.length, "registros");
     calcularTotalAtendimentos();
     atualizarGraficos();
 }
 
 function atualizarGraficos() {
+    console.log("Atualizando gráficos...");
+    
     // Destruir gráficos existentes
     if (chartUnidades) {
         chartUnidades.destroy();
@@ -213,6 +222,8 @@ function atualizarGraficos() {
     const labelsUnidades = top10Unidades.map(([unidade,]) => unidade);
     const dataUnidades = top10Unidades.map(([, total]) => total);
 
+    console.log("Top 10 Unidades:", labelsUnidades, dataUnidades);
+
     // Gráfico de Barras - Top 10 Unidades
     const ctxUnidades = document.getElementById("chartUnidades").getContext("2d");
     chartUnidades = new Chart(ctxUnidades, {
@@ -236,7 +247,7 @@ function atualizarGraficos() {
                     display: false
                 },
                 datalabels: {
-                    display: true, // Certificar que o datalabels está ativo
+                    display: true,
                     anchor: "end",
                     align: "top", // Alinhar no topo da barra
                     formatter: (value) => value.toLocaleString("pt-BR"),
@@ -249,14 +260,14 @@ function atualizarGraficos() {
             },
             scales: {
                 x: {
-                    beginAtZero: true
-                },
-                y: {
                     ticks: {
                         font: {
                             weight: "bold" // Nomes das unidades em negrito
                         }
                     }
+                },
+                y: {
+                    beginAtZero: true
                 }
             }
         }
@@ -283,6 +294,8 @@ function atualizarGraficos() {
         dadosPorMes.jun
     ];
     const totalGeralMeses = dataMeses.reduce((sum, value) => sum + value, 0);
+
+    console.log("Dados por mês:", dataMeses, "Total:", totalGeralMeses);
 
     const backgroundColors = [
         "#FF0000", // Janeiro - Vermelho vibrante
@@ -312,16 +325,16 @@ function atualizarGraficos() {
             maintainAspectRatio: false,
             plugins: {
                 datalabels: {
-                    display: true, // Certificar que o datalabels está ativo
+                    display: true,
                     formatter: (value, ctx) => {
-                        if (value === 0) return \"\";
+                        if (value === 0) return "";
                         let percentage = (value * 100 / totalGeralMeses).toFixed(1) + "%";
                         return ctx.chart.data.labels[ctx.dataIndex] + "\n" + value.toLocaleString("pt-BR") + "\n" + percentage;
                     },
                     color: "#fff",
                     font: {
                         weight: "bold",
-                        size: 12
+                        size: 10
                     }
                 },
                 legend: {
@@ -336,8 +349,15 @@ function atualizarGraficos() {
 }
 
 function atualizarTabelaCBOs() {
+    console.log("Atualizando tabela CBOs...");
     const corpoTabelaCBOs = document.getElementById("corpoTabelaCBOs");
     const tabelaCBOsHead = document.querySelector("#tabelaCBOs thead");
+    
+    if (!corpoTabelaCBOs || !tabelaCBOsHead) {
+        console.error("Elementos da tabela não encontrados!");
+        return;
+    }
+    
     corpoTabelaCBOs.innerHTML = ""; // Limpar conteúdo anterior
     tabelaCBOsHead.innerHTML = ""; // Limpar cabeçalho anterior
 
@@ -345,8 +365,11 @@ function atualizarTabelaCBOs() {
     const todasUnidadesUnicas = [...new Set(dadosOriginais.map(dado => dado.unidade))].sort();
 
     // Separar unidades normais das Multi
-    const unidadesNormais = todasUnidadesUnicas.filter(u => !u.startsWith(\'Multi\')).sort();
+    const unidadesNormais = todasUnidadesUnicas.filter(u => !u.startsWith("Multi")).sort();
     const unidadesMulti = ["Multi I", "Multi II", "Multi III", "Multi IV"];
+
+    console.log("Unidades normais:", unidadesNormais);
+    console.log("Unidades Multi:", unidadesMulti);
 
     // Agrupar dados por CBO e por Unidade
     const dadosPorCBO = dadosFiltrados.reduce((acc, dado) => {
@@ -372,13 +395,15 @@ function atualizarTabelaCBOs() {
         return acc;
     }, {});
 
+    console.log("Dados por CBO:", dadosPorCBO);
+
     // Criar cabeçalho da tabela
     const headerRow = tabelaCBOsHead.insertRow();
     const headers = ["CBO", ...unidadesNormais, ...unidadesMulti, "Total"];
     headers.forEach(text => {
         const th = document.createElement("th");
         th.textContent = text;
-        th.className = "px-4 py-2 text-left bg-gray-50 font-bold border-b";
+        th.className = "px-4 py-2 text-left bg-gray-50 font-bold border border-gray-300";
         headerRow.appendChild(th);
     });
 
@@ -390,80 +415,118 @@ function atualizarTabelaCBOs() {
         // CBO
         const cellCBO = row.insertCell();
         cellCBO.textContent = cbo;
-        cellCBO.className = "px-4 py-2 font-semibold border-b";
+        cellCBO.className = "px-4 py-2 font-semibold border border-gray-300";
         
         // Unidades normais
         unidadesNormais.forEach(unidade => {
             const cell = row.insertCell();
             cell.textContent = (totais[unidade] || 0).toLocaleString("pt-BR");
-            cell.className = "px-4 py-2 text-center border-b";
+            cell.className = "px-4 py-2 text-center border border-gray-300";
         });
         
         // Unidades Multi
         unidadesMulti.forEach(unidade => {
             const cell = row.insertCell();
             cell.textContent = (totais[unidade] || 0).toLocaleString("pt-BR");
-            cell.className = "px-4 py-2 text-center border-b";
+            cell.className = "px-4 py-2 text-center border border-gray-300";
         });
         
         // Total
         const cellTotal = row.insertCell();
         cellTotal.textContent = totais.total.toLocaleString("pt-BR");
-        cellTotal.className = "px-4 py-2 text-center font-bold border-b bg-blue-100";
+        cellTotal.className = "px-4 py-2 text-center font-bold border border-gray-300 bg-blue-100";
     });
+
+    console.log("Tabela CBO atualizada com", Object.keys(dadosPorCBO).length, "CBOs");
 }
 
 function popularFiltros() {
+    console.log("Populando filtros...");
     const checkboxUnidadesDiv = document.getElementById("checkboxUnidades");
     const checkboxCBOsDiv = document.getElementById("checkboxCBOs");
 
-    checkboxUnidadesDiv.innerHTML = \'\';
-    checkboxCBOsDiv.innerHTML = \'\';
+    if (!checkboxUnidadesDiv || !checkboxCBOsDiv) {
+        console.error("Elementos de filtro não encontrados!");
+        return;
+    }
+
+    checkboxUnidadesDiv.innerHTML = "";
+    checkboxCBOsDiv.innerHTML = "";
 
     const unidadesUnicas = [...new Set(dadosOriginais.map(dado => dado.unidade))].sort();
     const cboUnicos = [...new Set(dadosOriginais.map(dado => dado.cbo))].sort();
 
+    console.log("Unidades únicas:", unidadesUnicas.length);
+    console.log("CBOs únicos:", cboUnicos.length);
+
     // Popular checkboxes de Unidades
     unidadesUnicas.forEach(unidade => {
-        const div = document.createElement(\'div\');
-        div.className = \'flex items-center\';
+        const div = document.createElement("div");
+        div.className = "flex items-center";
         div.innerHTML = `
-            <input type=\"checkbox\" id=\"unidade-${unidade.replace(/\\s/g, \'\')}\" name=\"unidade\" value=\"${unidade}\" class=\"h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500\">
-            <label for=\"unidade-${unidade.replace(/\\s/g, \'\')}\" class=\"ml-2 text-sm text-gray-700\">${unidade}</label>
+            <input type="checkbox" id="unidade-${unidade.replace(/\s/g, "")}" name="unidade" value="${unidade}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+            <label for="unidade-${unidade.replace(/\s/g, "")}" class="ml-2 text-sm text-gray-700">${unidade}</label>
         `;
         checkboxUnidadesDiv.appendChild(div);
     });
 
     // Popular checkboxes de CBOs
     cboUnicos.forEach(cbo => {
-        const div = document.createElement(\'div\');
-        div.className = \'flex items-center\';
+        const div = document.createElement("div");
+        div.className = "flex items-center";
         div.innerHTML = `
-            <input type=\"checkbox\" id=\"cbo-${cbo.replace(/\\s/g, \'\')}\" name=\"cbo\" value=\"${cbo}\" class=\"h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500\">
-            <label for=\"cbo-${cbo.replace(/\\s/g, \'\')}\" class=\"ml-2 text-sm text-gray-700\">${cbo}</label>
+            <input type="checkbox" id="cbo-${cbo.replace(/\s/g, "")}" name="cbo" value="${cbo}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+            <label for="cbo-${cbo.replace(/\s/g, "")}" class="ml-2 text-sm text-gray-700">${cbo}</label>
         `;
         checkboxCBOsDiv.appendChild(div);
     });
+
+    console.log("Filtros populados com sucesso!");
 }
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
-    popularFiltros();
-    calcularTotalAtendimentos();
-    atualizarGraficos();
-
-    document.getElementById("btnAtualizar").addEventListener("click", filtrarDados);
-    document.getElementById("btnLimpar").addEventListener("click", () => {
-        document.getElementById("filtroMes").value = "";
-        document.querySelectorAll("input[name=\'unidade\']").forEach(cb => cb.checked = false);
-        document.querySelectorAll("input[name=\'cbo\']").forEach(cb => cb.checked = false);
-        dadosFiltrados = [...dadosOriginais];
+    console.log("DOM carregado, iniciando aplicação...");
+    
+    try {
+        popularFiltros();
         calcularTotalAtendimentos();
         atualizarGraficos();
-    });
+        
+        console.log("Aplicação inicializada com sucesso!");
+    } catch (error) {
+        console.error("Erro na inicialização:", error);
+    }
+
+    // Adicionar event listeners aos botões
+    const btnAtualizar = document.getElementById("btnAtualizar");
+    const btnLimpar = document.getElementById("btnLimpar");
+    const btnDownload = document.getElementById("btnDownload");
+
+    if (btnAtualizar) {
+        btnAtualizar.addEventListener("click", filtrarDados);
+        console.log("Event listener do botão Atualizar adicionado");
+    }
+
+    if (btnLimpar) {
+        btnLimpar.addEventListener("click", () => {
+            console.log("Limpando filtros...");
+            document.getElementById("filtroMes").value = "";
+            document.querySelectorAll("input[name=\'unidade\"]").forEach(cb => cb.checked = false);
+            document.querySelectorAll("input[name=\'cbo\"]").forEach(cb => cb.checked = false);
+            dadosFiltrados = [...dadosOriginais];
+            calcularTotalAtendimentos();
+            atualizarGraficos();
+        });
+        console.log("Event listener do botão Limpar adicionado");
+    }
     
-    document.getElementById("btnDownload").addEventListener("click", () => {
-        alert("Funcionalidade de download em desenvolvimento!");
-    });
+    if (btnDownload) {
+        btnDownload.addEventListener("click", () => {
+            alert("Funcionalidade de download em desenvolvimento!");
+        });
+        console.log("Event listener do botão Download adicionado");
+    }
 });
+
 
