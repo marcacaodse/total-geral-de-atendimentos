@@ -1,9 +1,68 @@
 @media print {
-    body { print-color-adjust: exact; }
+    body { 
+        print-color-adjust: exact; 
+    }
 }
+
 .chart-container {
     position: relative;
     height: 500px;
     width: 100%;
 }
 
+/* Melhorias adicionais para responsividade */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 400px;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem !important;
+    }
+    
+    h2 {
+        font-size: 1.125rem !important;
+    }
+}
+
+/* Melhorias na tabela */
+#dataTable {
+    font-size: 0.875rem;
+}
+
+#dataTable th,
+#dataTable td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hover effects */
+.hover\:bg-gray-50:hover {
+    background-color: #f9fafb;
+    transition: background-color 0.2s ease;
+}
+
+/* Scroll customizado para tabela */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
