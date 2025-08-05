@@ -10,59 +10,28 @@
     width: 100%;
 }
 
-/* Melhorias adicionais para responsividade */
+/* Estilo para o cabeçalho azul escuro */
+.header-container {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Efeitos adicionais para melhor apresentação */
+.header-container h1 {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-container h2 {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
-    .chart-container {
-        height: 400px;
+    .header-container h1 {
+        font-size: 2rem;
     }
     
-    .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
+    .header-container h2 {
+        font-size: 1rem;
     }
-    
-    h1 {
-        font-size: 2rem !important;
-    }
-    
-    h2 {
-        font-size: 1.125rem !important;
-    }
-}
-
-/* Melhorias na tabela */
-#dataTable {
-    font-size: 0.875rem;
-}
-
-#dataTable th,
-#dataTable td {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Hover effects */
-.hover\:bg-gray-50:hover {
-    background-color: #f9fafb;
-    transition: background-color 0.2s ease;
-}
-
-/* Scroll customizado para tabela */
-.overflow-x-auto::-webkit-scrollbar {
-    height: 8px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
 }
