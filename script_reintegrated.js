@@ -1,545 +1,384 @@
-// Dados reais fornecidos pelo usuário
-const dadosOriginais = [
-    { unidade: "Bela Vista", cbo: "Assistente Social", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 6 },
-    { unidade: "Jardim Bandeirantes", cbo: "Assistente Social", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 6 },
-    { unidade: "Jardim Eldorado", cbo: "Assistente Social", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 3 },
-    { unidade: "Multi I", cbo: "Assistente Social", jan: 10, fev: 17, mar: 21, abr: 19, mai: 10, jun: 0 },
-    { unidade: "Multi II", cbo: "Assistente Social", jan: 6, fev: 5, mar: 5, abr: 2, mai: 1, jun: 0 },
-    { unidade: "Multi III", cbo: "Assistente Social", jan: 0, fev: 0, mar: 0, abr: 0, mai: 4, jun: 12 },
-    { unidade: "Multi IV", cbo: "Assistente Social", jan: 17, fev: 30, mar: 0, abr: 21, mai: 16, jun: 17 },
-    { unidade: "Santa Cruz", cbo: "Assistente Social", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 1 },
-    { unidade: "Unidade Xv", cbo: "Assistente Social", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 1 },
-    { unidade: "Agua Branca", cbo: "Auxiliar de enfermagem", jan: 0, fev: 0, mar: 0, abr: 1, mai: 0, jun: 0 },
-    { unidade: "Csu Eldorado", cbo: "Auxiliar de enfermagem", jan: 0, fev: 0, mar: 0, abr: 0, mai: 1, jun: 6 },
-    { unidade: "Jardim Bandeirantes", cbo: "Auxiliar de enfermagem", jan: 703, fev: 723, mar: 601, abr: 926, mai: 1827, jun: 535 },
-    { unidade: "Jardim Eldorado", cbo: "Auxiliar de enfermagem", jan: 0, fev: 36, mar: 48, abr: 50, mai: 169, jun: 32 },
-    { unidade: "Multi II", cbo: "Auxiliar de enfermagem", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 1 },
-    { unidade: "Novo Eldorado", cbo: "Auxiliar de enfermagem", jan: 175, fev: 28, mar: 54, abr: 202, mai: 0, jun: 0 },
-    { unidade: "Parque São João", cbo: "Auxiliar de enfermagem", jan: 51, fev: 194, mar: 323, abr: 139, mai: 2, jun: 0 },
-    { unidade: "Perobas", cbo: "Auxiliar de enfermagem", jan: 138, fev: 128, mar: 303, abr: 186, mai: 313, jun: 238 },
-    { unidade: "Unidade Xv", cbo: "Auxiliar de enfermagem", jan: 355, fev: 421, mar: 358, abr: 474, mai: 585, jun: 291 },
-    { unidade: "Agua Branca", cbo: "Cirurgião Dentista", jan: 153, fev: 172, mar: 173, abr: 147, mai: 174, jun: 194 },
-    { unidade: "Csu Eldorado", cbo: "Cirurgião Dentista", jan: 166, fev: 158, mar: 85, abr: 101, mai: 76, jun: 137 },
-    { unidade: "Jardim Eldorado", cbo: "Cirurgião Dentista", jan: 0, fev: 146, mar: 134, abr: 140, mai: 152, jun: 135 },
-    { unidade: "Novo Eldorado", cbo: "Cirurgião Dentista", jan: 141, fev: 128, mar: 21, abr: 118, mai: 71, jun: 34 },
-    { unidade: "Parque São João", cbo: "Cirurgião Dentista", jan: 179, fev: 225, mar: 183, abr: 208, mai: 257, jun: 0 },
-    { unidade: "Unidade Xv", cbo: "Cirurgião Dentista", jan: 246, fev: 327, mar: 250, abr: 272, mai: 364, jun: 346 },
-    { unidade: "Agua Branca", cbo: "Enfermeiro", jan: 545, fev: 714, mar: 281, abr: 457, mai: 828, jun: 593 },
-    { unidade: "Bela Vista", cbo: "Enfermeiro", jan: 97, fev: 182, mar: 45, abr: 103, mai: 199, jun: 179 },
-    { unidade: "Csu Eldorado", cbo: "Enfermeiro", jan: 740, fev: 541, mar: 680, abr: 950, mai: 1272, jun: 1349 },
-    { unidade: "Jardim Bandeirantes", cbo: "Enfermeiro", jan: 631, fev: 473, mar: 287, abr: 222, mai: 543, jun: 568 },
-    { unidade: "Jardim Eldorado", cbo: "Enfermeiro", jan: 231, fev: 252, mar: 256, abr: 353, mai: 341, jun: 392 },
-    { unidade: "Multi II", cbo: "Enfermeiro", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 14 },
-    { unidade: "Novo Eldorado", cbo: "Enfermeiro", jan: 95, fev: 79, mar: 98, abr: 57, mai: 302, jun: 538 },
-    { unidade: "Parque São João", cbo: "Enfermeiro", jan: 778, fev: 584, mar: 126, abr: 474, mai: 628, jun: 0 },
-    { unidade: "Perobas", cbo: "Enfermeiro", jan: 234, fev: 315, mar: 22, abr: 374, mai: 565, jun: 531 },
-    { unidade: "Santa Cruz", cbo: "Enfermeiro", jan: 198, fev: 63, mar: 103, abr: 192, mai: 168, jun: 184 },
-    { unidade: "Unidade Xv", cbo: "Enfermeiro", jan: 1611, fev: 1257, mar: 860, abr: 749, mai: 1196, jun: 1314 },
-    { unidade: "Csu Eldorado", cbo: "Fisioterapeuta", jan: 0, fev: 1, mar: 0, abr: 1, mai: 0, jun: 0 },
-    { unidade: "Multi I", cbo: "Fisioterapeuta/Emulti", jan: 92, fev: 2, mar: 43, abr: 36, mai: 48, jun: 0 },
-    { unidade: "Multi II", cbo: "Fisioterapeuta/Emulti", jan: 48, fev: 54, mar: 49, abr: 53, mai: 36, jun: 0 },
-    { unidade: "Multi IV", cbo: "Fisioterapeuta/Emulti", jan: 14, fev: 36, mar: 29, abr: 49, mai: 38, jun: 0 },
-    { unidade: "Novo Eldorado", cbo: "Fisioterapeuta", jan: 0, fev: 6, mar: 16, abr: 4, mai: 1, jun: 0 },
-    { unidade: "Agua Branca", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 18 },
-    { unidade: "Bela Vista", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 3 },
-    { unidade: "Csu Eldorado", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 48 },
-    { unidade: "Jardim Eldorado", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 5 },
-    { unidade: "Multi I", cbo: "Fonoaudiologo", jan: 7, fev: 50, mar: 38, abr: 51, mai: 40, jun: 0 },
-    { unidade: "Multi II", cbo: "Fonoaudiologo", jan: 41, fev: 49, mar: 41, abr: 34, mai: 42, jun: 28 },
-    { unidade: "Multi III", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 2, mai: 32, jun: 22 },
-    { unidade: "Multi IV", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 18 },
-    { unidade: "Novo Eldorado", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 49 },
-    { unidade: "Perobas", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 32 },
-    { unidade: "Santa Cruz", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 2 },
-    { unidade: "Unidade Xv", cbo: "Fonoaudiologo", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 11 },
-    { unidade: "Csu Eldorado", cbo: "Médico Clinico", jan: 171, fev: 55, mar: 166, abr: 179, mai: 217, jun: 174 },
-    { unidade: "Jardim Bandeirantes", cbo: "Médico Clinico", jan: 111, fev: 192, mar: 170, abr: 162, mai: 201, jun: 181 },
-    { unidade: "Novo Eldorado", cbo: "Médico Clinico", jan: 163, fev: 15, mar: 107, abr: 116, mai: 138, jun: 138 },
-    { unidade: "Parque São João", cbo: "Médico Clinico", jan: 0, fev: 1, mar: 0, abr: 2, mai: 0, jun: 0 },
-    { unidade: "Unidade Xv", cbo: "Médico Clinico", jan: 43, fev: 46, mar: 122, abr: 103, mai: 109, jun: 133 },
-    { unidade: "Agua Branca", cbo: "Médico Estrategia da Familia", jan: 832, fev: 604, mar: 825, abr: 783, mai: 1027, jun: 895 },
-    { unidade: "Bela Vista", cbo: "Médico Estrategia da Familia", jan: 165, fev: 303, mar: 243, abr: 282, mai: 321, jun: 293 },
-    { unidade: "Csu Eldorado", cbo: "Médico Estrategia da Familia", jan: 719, fev: 875, mar: 946, abr: 1020, mai: 1159, jun: 968 },
-    { unidade: "Jardim Bandeirantes", cbo: "Médico Estrategia da Familia", jan: 681, fev: 709, mar: 604, abr: 614, mai: 910, jun: 774 },
-    { unidade: "Jardim Eldorado", cbo: "Médico Estrategia da Familia", jan: 612, fev: 482, mar: 509, abr: 338, mai: 748, jun: 578 },
-    { unidade: "Novo Eldorado", cbo: "Médico Estrategia da Familia", jan: 442, fev: 472, mar: 436, abr: 501, mai: 474, jun: 501 },
-    { unidade: "Parque São João", cbo: "Médico Estrategia da Familia", jan: 689, fev: 796, mar: 766, abr: 507, mai: 408, jun: 0 },
-    { unidade: "Perobas", cbo: "Médico Estrategia da Familia", jan: 198, fev: 320, mar: 366, abr: 329, mai: 494, jun: 368 },
-    { unidade: "Santa Cruz", cbo: "Médico Estrategia da Familia", jan: 416, fev: 590, mar: 501, abr: 496, mai: 564, jun: 405 },
-    { unidade: "Unidade Xv", cbo: "Médico Estrategia da Familia", jan: 1201, fev: 958, mar: 914, abr: 1018, mai: 1206, jun: 1039 },
-    { unidade: "Agua Branca", cbo: "Médico Ginecologista Obstetra", jan: 0, fev: 0, mar: 1, abr: 0, mai: 1, jun: 10 },
-    { unidade: "Bela Vista", cbo: "Médico Ginecologista Obstetra", jan: 10, fev: 27, mar: 33, abr: 7, mai: 23, jun: 31 },
-    { unidade: "Csu Eldorado", cbo: "Médico Ginecologista Obstetra", jan: 20, fev: 93, mar: 71, abr: 75, mai: 50, jun: 63 },
-    { unidade: "Jardim Bandeirantes", cbo: "Médico Ginecologista Obstetra", jan: 32, fev: 38, mar: 38, abr: 29, mai: 29, jun: 29 },
-    { unidade: "Jardim Eldorado", cbo: "Médico Ginecologista Obstetra", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 20 },
-    { unidade: "Multi I", cbo: "Médico Ginecologista Obstetra", jan: 20, fev: 26, mar: 30, abr: 17, mai: 26, jun: 0 },
-    { unidade: "Multi II", cbo: "Médico Ginecologista Obstetra", jan: 7, fev: 23, mar: 18, abr: 23, mai: 0, jun: 0 },
-    { unidade: "Multi III", cbo: "Médico Ginecologista Obstetra", jan: 84, fev: 78, mar: 56, abr: 43, mai: 97, jun: 50 },
-    { unidade: "Multi IV", cbo: "Médico Ginecologista Obstetra", jan: 0, fev: 0, mar: 12, abr: 0, mai: 0, jun: 0 },
-    { unidade: "Novo Eldorado", cbo: "Médico Ginecologista Obstetra", jan: 0, fev: 0, mar: 0, abr: 7, mai: 21, jun: 41 },
-    { unidade: "Parque São João", cbo: "Médico Ginecologista Obstetra", jan: 29, fev: 61, mar: 53, abr: 40, mai: 52, jun: 0 },
-    { unidade: "Perobas", cbo: "Médico Ginecologista Obstetra", jan: 18, fev: 30, mar: 27, abr: 33, mai: 35, jun: 34 },
-    { unidade: "Santa Cruz", cbo: "Médico Ginecologista Obstetra", jan: 0, fev: 0, mar: 0, abr: 0, mai: 28, jun: 17 },
-    { unidade: "Unidade Xv", cbo: "Médico Ginecologista Obstetra", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 10 },
-    { unidade: "Agua Branca", cbo: "Médico Pediatra", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 8 },
-    { unidade: "Csu Eldorado", cbo: "Médico Pediatra", jan: 54, fev: 55, mar: 48, abr: 16, mai: 23, jun: 48 },
-    { unidade: "Jardim Bandeirantes", cbo: "Médico Pediatra", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 30 },
-    { unidade: "Jardim Eldorado", cbo: "Médico Pediatra", jan: 46, fev: 40, mar: 27, abr: 30, mai: 0, jun: 19 },
-    { unidade: "Multi I", cbo: "Médico Pediatra", jan: 6, fev: 32, mar: 34, abr: 32, mai: 1, jun: 0 },
-    { unidade: "Multi II", cbo: "Médico Pediatra", jan: 0, fev: 0, mar: 0, abr: 33, mai: 65, jun: 8 },
-    { unidade: "Multi IV", cbo: "Médico Pediatra", jan: 0, fev: 2, mar: 82, abr: 83, mai: 117, jun: 13 },
-    { unidade: "Novo Eldorado", cbo: "Médico Pediatra", jan: 26, fev: 31, mar: 34, abr: 24, mai: 2, jun: 19 },
-    { unidade: "Parque São João", cbo: "Médico Pediatra", jan: 33, fev: 33, mar: 45, abr: 33, mai: 0, jun: 0 },
-    { unidade: "Perobas", cbo: "Médico Pediatra", jan: 21, fev: 24, mar: 18, abr: 28, mai: 0, jun: 0 },
-    { unidade: "Santa Cruz", cbo: "Médico Pediatra", jan: 35, fev: 33, mar: 0, abr: 0, mai: 0, jun: 21 },
-    { unidade: "Unidade Xv", cbo: "Médico Pediatra", jan: 30, fev: 37, mar: 35, abr: 24, mai: 0, jun: 0 },
-    { unidade: "Agua Branca", cbo: "Médico Psiquiatra", jan: 51, fev: 55, mar: 37, abr: 45, mai: 0, jun: 44 },
-    { unidade: "Csu Eldorado", cbo: "Médico Psiquiatra", jan: 0, fev: 1, mar: 1, abr: 0, mai: 1, jun: 17 },
-    { unidade: "Jardim Bandeirantes", cbo: "Médico Psiquiatra", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 28 },
-    { unidade: "Jardim Eldorado", cbo: "Médico Psiquiatra", jan: 0, fev: 0, mar: 1, abr: 0, mai: 2, jun: 9 },
-    { unidade: "Multi I", cbo: "Médico Psiquiatra", jan: 0, fev: 2, mar: 2, abr: 11, mai: 0, jun: 0 },
-    { unidade: "Multi II", cbo: "Médico Psiquiatra", jan: 111, fev: 109, mar: 60, abr: 90, mai: 97, jun: 81 },
-    { unidade: "Multi IV", cbo: "Médico Psiquiatra", jan: 58, fev: 105, mar: 90, abr: 54, mai: 45, jun: 20 },
-    { unidade: "Unidade Xv", cbo: "Médico Psiquiatra", jan: 2, fev: 0, mar: 0, abr: 1, mai: 0, jun: 31 },
-    { unidade: "Agua Branca", cbo: "Médico Residente", jan: 223, fev: 284, mar: 149, abr: 121, mai: 150, jun: 109 },
-    { unidade: "Agua Branca", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 9 },
-    { unidade: "Bela Vista", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 9 },
-    { unidade: "Csu Eldorado", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 1, jun: 6 },
-    { unidade: "Jardim Bandeirantes", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 16 },
-    { unidade: "Jardim Eldorado", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 1 },
-    { unidade: "Multi I", cbo: "Nutricionista", jan: 0, fev: 0, mar: 4, abr: 11, mai: 64, jun: 0 },
-    { unidade: "Multi II", cbo: "Nutricionista", jan: 45, fev: 34, mar: 13, abr: 20, mai: 10, jun: 1 },
-    { unidade: "Multi III", cbo: "Nutricionista", jan: 0, fev: 4, mar: 17, abr: 30, mai: 29, jun: 22 },
-    { unidade: "Multi IV", cbo: "Nutricionista", jan: 3, fev: 0, mar: 0, abr: 27, mai: 69, jun: 1 },
-    { unidade: "Novo Eldorado", cbo: "Nutricionista", jan: 0, fev: 1, mar: 0, abr: 0, mai: 0, jun: 14 },
-    { unidade: "Perobas", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 8 },
-    { unidade: "Santa Cruz", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 8 },
-    { unidade: "Unidade Xv", cbo: "Nutricionista", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 6 },
-    { unidade: "Novo Eldorado", cbo: "Professor de medicina", jan: 4, fev: 5, mar: 11, abr: 28, mai: 12, jun: 0 },
-    { unidade: "Parque São João", cbo: "Professor de medicina", jan: 10, fev: 18, mar: 17, abr: 23, mai: 0, jun: 0 },
-    { unidade: "Multi I", cbo: "Professor de Educação Fisica", jan: 130, fev: 122, mar: 110, abr: 3, mai: 0, jun: 0 },
-    { unidade: "Parque São João", cbo: "Professor de Educação Fisica", jan: 0, fev: 0, mar: 0, abr: 0, mai: 1, jun: 0 },
-    { unidade: "Agua Branca", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 5 },
-    { unidade: "Bela Vista", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 6 },
-    { unidade: "Jardim Bandeirantes", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 19 },
-    { unidade: "Multi I", cbo: "Pscologo Clinico", jan: 100, fev: 77, mar: 51, abr: 64, mai: 102, jun: 0 },
-    { unidade: "Multi II", cbo: "Pscologo Clinico", jan: 44, fev: 79, mar: 54, abr: 60, mai: 70, jun: 45 },
-    { unidade: "Multi III", cbo: "Pscologo Clinico", jan: 77, fev: 133, mar: 125, abr: 132, mai: 164, jun: 65 },
-    { unidade: "Multi IV", cbo: "Pscologo Clinico", jan: 71, fev: 60, mar: 61, abr: 14, mai: 72, jun: 41 },
-    { unidade: "Novo Eldorado", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 81 },
-    { unidade: "Perobas", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 6 },
-    { unidade: "Santa Cruz", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 5 },
-    { unidade: "Unidade Xv", cbo: "Pscologo Clinico", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 27 },
-    { unidade: "Agua Branca", cbo: "Tecnico de Enfermagem", jan: 1613, fev: 987, mar: 1589, abr: 1073, mai: 1137, jun: 1218 },
-    { unidade: "Bela Vista", cbo: "Tecnico de Enfermagem", jan: 258, fev: 258, mar: 226, abr: 319, mai: 446, jun: 356 },
-    { unidade: "Csu Eldorado", cbo: "Tecnico de Enfermagem", jan: 1235, fev: 1389, mar: 1014, abr: 663, mai: 805, jun: 610 },
-    { unidade: "Jardim Bandeirantes", cbo: "Tecnico de Enfermagem", jan: 1633, fev: 1418, mar: 1413, abr: 2128, mai: 2525, jun: 2170 },
-    { unidade: "Jardim Eldorado", cbo: "Tecnico de Enfermagem", jan: 750, fev: 665, mar: 621, abr: 851, mai: 840, jun: 795 },
-    { unidade: "Novo Eldorado", cbo: "Tecnico de Enfermagem", jan: 1814, fev: 1749, mar: 1676, abr: 1446, mai: 1941, jun: 1937 },
-    { unidade: "Parque São João", cbo: "Tecnico de Enfermagem", jan: 720, fev: 698, mar: 835, abr: 720, mai: 693, jun: 0 },
-    { unidade: "Perobas", cbo: "Tecnico de Enfermagem", jan: 142, fev: 171, mar: 231, abr: 28, mai: 5, jun: 0 },
-    { unidade: "Santa Cruz", cbo: "Tecnico de Enfermagem", jan: 857, fev: 1055, mar: 926, abr: 933, mai: 1199, jun: 1108 },
-    { unidade: "Unidade Xv", cbo: "Tecnico de Enfermagem", jan: 1084, fev: 1208, mar: 1389, abr: 1258, mai: 1163, jun: 1527 },
-    { unidade: "Agua Branca", cbo: "Terapeuta Ocupacional", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 7 },
-    { unidade: "Jardim Eldorado", cbo: "Terapeuta Ocupacional", jan: 0, fev: 0, mar: 0, abr: 0, mai: 1, jun: 6 },
-    { unidade: "Multi I", cbo: "Terapeuta Ocupacional", jan: 0, fev: 39, mar: 42, abr: 25, mai: 41, jun: 0 },
-    { unidade: "Multi III", cbo: "Terapeuta Ocupacional", jan: 0, fev: 0, mar: 0, abr: 0, mai: 43, jun: 13 },
-    { unidade: "Multi IV", cbo: "Terapeuta Ocupacional", jan: 49, fev: 51, mar: 3, abr: 6, mai: 0, jun: 0 },
-    { unidade: "Novo Eldorado", cbo: "Terapeuta Ocupacional", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 3 },
-    { unidade: "Perobas", cbo: "Terapeuta Ocupacional", jan: 0, fev: 0, mar: 0, abr: 0, mai: 4, jun: 14 },
-    { unidade: "Unidade Xv", cbo: "Terapeuta Ocupacional", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 3 }
+// Dados completos da planilha
+const dados = [
+    ["Bela Vista", "Assistente Social", 0, 0, 0, 0, 0, 6],
+    ["Jardim Bandeirantes", "Assistente Social", 0, 0, 0, 0, 0, 6],
+    ["Jardim Eldorado", "Assistente Social", 0, 0, 0, 0, 0, 3],
+    ["Multi I", "Assistente Social", 10, 17, 21, 19, 10, 0],
+    ["Multi II", "Assistente Social", 6, 5, 5, 2, 1, 0],
+    ["Multi III", "Assistente Social", 0, 0, 0, 0, 4, 12],
+    ["Multi IV", "Assistente Social", 17, 30, 0, 21, 16, 17],
+    ["Santa Cruz", "Assistente Social", 0, 0, 0, 0, 0, 1],
+    ["Unidade Xv", "Assistente Social", 0, 0, 0, 0, 0, 1],
+    ["Agua Branca", "Auxiliar de enfermagem", 0, 0, 0, 1, 0, 0],
+    ["Csu Eldorado", "Auxiliar de enfermagem", 0, 0, 0, 0, 1, 6],
+    ["Jardim Bandeirantes", "Auxiliar de enfermagem", 703, 723, 601, 926, 1827, 535],
+    ["Jardim Eldorado", "Auxiliar de enfermagem", 0, 36, 48, 50, 169, 32],
+    ["Multi II", "Auxiliar de enfermagem", 0, 0, 0, 0, 0, 1],
+    ["Novo Eldorado", "Auxiliar de enfermagem", 175, 28, 54, 202, 0, 0],
+    ["Parque São João", "Auxiliar de enfermagem", 51, 194, 323, 139, 2, 0],
+    ["Perobas", "Auxiliar de enfermagem", 138, 128, 303, 186, 313, 238],
+    ["Unidade Xv", "Auxiliar de enfermagem", 355, 421, 358, 474, 585, 291],
+    ["Agua Branca", "Cirurgião Dentista", 153, 172, 173, 147, 174, 194],
+    ["Csu Eldorado", "Cirurgião Dentista", 166, 158, 85, 101, 76, 137],
+    ["Jardim Eldorado", "Cirurgião Dentista", 0, 146, 134, 140, 152, 135],
+    ["Novo Eldorado", "Cirurgião Dentista", 141, 128, 21, 118, 71, 34],
+    ["Parque São João", "Cirurgião Dentista", 179, 225, 183, 208, 257, 0],
+    ["Unidade Xv", "Cirurgião Dentista", 246, 327, 250, 272, 364, 346],
+    ["Agua Branca", "Enfermeiro", 545, 714, 281, 457, 828, 593],
+    ["Bela Vista", "Enfermeiro", 97, 182, 45, 103, 199, 179],
+    ["Csu Eldorado", "Enfermeiro", 740, 541, 680, 950, 1272, 1349],
+    ["Jardim Bandeirantes", "Enfermeiro", 631, 473, 287, 222, 543, 568],
+    ["Jardim Eldorado", "Enfermeiro", 231, 252, 256, 353, 341, 392],
+    ["Multi II", "Enfermeiro", 0, 0, 0, 0, 0, 14],
+    ["Novo Eldorado", "Enfermeiro", 95, 79, 98, 57, 302, 538],
+    ["Parque São João", "Enfermeiro", 778, 584, 126, 474, 628, 0],
+    ["Perobas", "Enfermeiro", 234, 315, 22, 374, 565, 531],
+    ["Santa Cruz", "Enfermeiro", 198, 63, 103, 192, 168, 184],
+    ["Unidade Xv", "Enfermeiro", 1611, 1257, 860, 749, 1196, 1314],
+    ["Csu Eldorado", "Fisioterapeuta", 0, 1, 0, 1, 0, 0],
+    ["Multi I", "Fisioterapeuta/Emulti", 92, 2, 43, 36, 48, 0],
+    ["Multi II", "Fisioterapeuta/Emulti", 48, 54, 49, 53, 36, 0],
+    ["Multi IV", "Fisioterapeuta/Emulti", 14, 36, 29, 49, 38, 0],
+    ["Novo Eldorado", "Fisioterapeuta", 0, 6, 16, 4, 1, 0],
+    ["Agua Branca", "Fonoaudiologo", 0, 0, 0, 0, 0, 18],
+    ["Bela Vista", "Fonoaudiologo", 0, 0, 0, 0, 0, 3],
+    ["Csu Eldorado", "Fonoaudiologo", 0, 0, 0, 0, 0, 48],
+    ["Jardim Eldorado", "Fonoaudiologo", 0, 0, 0, 0, 0, 5],
+    ["Multi I", "Fonoaudiologo", 7, 50, 38, 51, 40, 0],
+    ["Multi II", "Fonoaudiologo", 41, 49, 41, 34, 42, 28],
+    ["Multi III", "Fonoaudiologo", 0, 0, 0, 2, 32, 22],
+    ["Multi IV", "Fonoaudiologo", 0, 0, 0, 0, 0, 18],
+    ["Novo Eldorado", "Fonoaudiologo", 0, 0, 0, 0, 0, 49],
+    ["Perobas", "Fonoaudiologo", 0, 0, 0, 0, 0, 32],
+    ["Santa Cruz", "Fonoaudiologo", 0, 0, 0, 0, 0, 2],
+    ["Unidade Xv", "Fonoaudiologo", 0, 0, 0, 0, 0, 11],
+    ["Csu Eldorado", "Médico Clinico", 171, 55, 166, 179, 217, 174],
+    ["Jardim Bandeirantes", "Médico Clinico", 111, 192, 170, 162, 201, 181],
+    ["Novo Eldorado", "Médico Clinico", 163, 15, 107, 116, 138, 138],
+    ["Parque São João", "Médico Clinico", 0, 1, 0, 2, 0, 0],
+    ["Unidade Xv", "Médico Clinico", 43, 46, 122, 103, 109, 133],
+    ["Agua Branca", "Médico Estrategia da Familia", 832, 604, 825, 783, 1027, 895],
+    ["Bela Vista", "Médico Estrategia da Familia", 165, 303, 243, 282, 321, 293],
+    ["Csu Eldorado", "Médico Estrategia da Familia", 719, 875, 946, 1020, 1159, 968],
+    ["Jardim Bandeirantes", "Médico Estrategia da Familia", 681, 709, 604, 614, 910, 774],
+    ["Jardim Eldorado", "Médico Estrategia da Familia", 612, 482, 509, 338, 748, 578],
+    ["Novo Eldorado", "Médico Estrategia da Familia", 442, 472, 436, 501, 474, 501],
+    ["Parque São João", "Médico Estrategia da Familia", 689, 796, 766, 507, 408, 0],
+    ["Perobas", "Médico Estrategia da Familia", 198, 320, 366, 329, 494, 368],
+    ["Santa Cruz", "Médico Estrategia da Familia", 416, 590, 501, 496, 564, 405],
+    ["Unidade Xv", "Médico Estrategia da Familia", 1201, 958, 914, 1018, 1206, 1039],
+    ["Agua Branca", "Médico Ginecologista Obstetra", 0, 0, 1, 0, 1, 10],
+    ["Bela Vista", "Médico Ginecologista Obstetra", 10, 27, 33, 7, 23, 31],
+    ["Csu Eldorado", "Médico Ginecologista Obstetra", 20, 93, 71, 75, 50, 63],
+    ["Jardim Bandeirantes", "Médico Ginecologista Obstetra", 32, 38, 38, 29, 29, 29],
+    ["Jardim Eldorado", "Médico Ginecologista Obstetra", 0, 0, 0, 0, 0, 20],
+    ["Multi I", "Médico Ginecologista Obstetra", 20, 26, 30, 17, 26, 0],
+    ["Multi II", "Médico Ginecologista Obstetra", 7, 23, 18, 23, 0, 0],
+    ["Multi III", "Médico Ginecologista Obstetra", 84, 78, 56, 43, 97, 50],
+    ["Multi IV", "Médico Ginecologista Obstetra", 0, 0, 12, 0, 0, 0],
+    ["Novo Eldorado", "Médico Ginecologista Obstetra", 0, 0, 0, 7, 21, 41],
+    ["Parque São João", "Médico Ginecologista Obstetra", 29, 61, 53, 40, 52, 0],
+    ["Perobas", "Médico Ginecologista Obstetra", 18, 30, 27, 33, 35, 34],
+    ["Santa Cruz", "Médico Ginecologista Obstetra", 0, 0, 0, 0, 28, 17],
+    ["Unidade Xv", "Médico Ginecologista Obstetra", 0, 0, 0, 0, 0, 10],
+    ["Agua Branca", "Médico Pediatra", 0, 0, 0, 0, 0, 8],
+    ["Csu Eldorado", "Médico Pediatra", 54, 55, 48, 16, 23, 48],
+    ["Jardim Bandeirantes", "Médico Pediatra", 0, 0, 0, 0, 0, 30],
+    ["Jardim Eldorado", "Médico Pediatra", 46, 40, 27, 30, 0, 19],
+    ["Multi I", "Médico Pediatra", 6, 32, 34, 32, 1, 0],
+    ["Multi II", "Médico Pediatra", 0, 0, 0, 33, 65, 8],
+    ["Multi IV", "Médico Pediatra", 0, 2, 82, 83, 117, 13],
+    ["Novo Eldorado", "Médico Pediatra", 26, 31, 34, 24, 2, 19],
+    ["Parque São João", "Médico Pediatra", 33, 33, 45, 33, 0, 0],
+    ["Perobas", "Médico Pediatra", 21, 24, 18, 28, 0, 0],
+    ["Santa Cruz", "Médico Pediatra", 35, 33, 0, 0, 0, 21],
+    ["Unidade Xv", "Médico Pediatra", 30, 37, 35, 24, 0, 0],
+    ["Agua Branca", "Médico Psiquiatra", 51, 55, 37, 45, 0, 44],
+    ["Csu Eldorado", "Médico Psiquiatra", 0, 1, 1, 0, 1, 17],
+    ["Jardim Bandeirantes", "Médico Psiquiatra", 0, 0, 0, 0, 0, 28],
+    ["Jardim Eldorado", "Médico Psiquiatra", 0, 0, 1, 0, 2, 9],
+    ["Multi I", "Médico Psiquiatra", 0, 2, 2, 11, 0, 0],
+    ["Multi II", "Médico Psiquiatra", 111, 109, 60, 90, 97, 81],
+    ["Multi IV", "Médico Psiquiatra", 58, 105, 90, 54, 45, 20],
+    ["Unidade Xv", "Médico Psiquiatra", 2, 0, 0, 1, 0, 31],
+    ["Agua Branca", "Médico Residente", 223, 284, 149, 121, 150, 109],
+    ["Agua Branca", "Nutricionista", 0, 0, 0, 0, 0, 9],
+    ["Bela Vista", "Nutricionista", 0, 0, 0, 0, 0, 9],
+    ["Csu Eldorado", "Nutricionista", 0, 0, 0, 0, 1, 6],
+    ["Jardim Bandeirantes", "Nutricionista", 0, 0, 0, 0, 0, 16],
+    ["Jardim Eldorado", "Nutricionista", 0, 0, 0, 0, 0, 1],
+    ["Multi I", "Nutricionista", 0, 0, 4, 11, 64, 0],
+    ["Multi II", "Nutricionista", 45, 34, 13, 20, 10, 1],
+    ["Multi III", "Nutricionista", 0, 4, 17, 30, 29, 22],
+    ["Multi IV", "Nutricionista", 3, 0, 0, 27, 69, 1],
+    ["Novo Eldorado", "Nutricionista", 0, 1, 0, 0, 0, 14],
+    ["Perobas", "Nutricionista", 0, 0, 0, 0, 0, 8],
+    ["Santa Cruz", "Nutricionista", 0, 0, 0, 0, 0, 8],
+    ["Unidade Xv", "Nutricionista", 0, 0, 0, 0, 0, 6],
+    ["Novo Eldorado", "Professor de medicina", 4, 5, 11, 28, 12, 0],
+    ["Parque São João", "Professor de medicina", 10, 18, 17, 23, 0, 0],
+    ["Multi I", "Professor de Educação Fisica", 130, 122, 110, 3, 0, 0],
+    ["Parque São João", "Professor de Educação Fisica", 0, 0, 0, 0, 1, 0],
+    ["Agua Branca", "Pscologo Clinico", 0, 0, 0, 0, 0, 5],
+    ["Bela Vista", "Pscologo Clinico", 0, 0, 0, 0, 0, 6],
+    ["Jardim Bandeirantes", "Pscologo Clinico", 0, 0, 0, 0, 0, 19],
+    ["Multi I", "Pscologo Clinico", 100, 77, 51, 64, 102, 0],
+    ["Multi II", "Pscologo Clinico", 44, 79, 54, 60, 70, 45],
+    ["Multi III", "Pscologo Clinico", 77, 133, 125, 132, 164, 65],
+    ["Multi IV", "Pscologo Clinico", 71, 60, 61, 14, 72, 41],
+    ["Novo Eldorado", "Pscologo Clinico", 0, 0, 0, 0, 0, 81],
+    ["Perobas", "Pscologo Clinico", 0, 0, 0, 0, 0, 6],
+    ["Santa Cruz", "Pscologo Clinico", 0, 0, 0, 0, 0, 5],
+    ["Unidade Xv", "Pscologo Clinico", 0, 0, 0, 0, 0, 27],
+    ["Agua Branca", "Tecnico de Enfermagem", 1613, 987, 1589, 1073, 1137, 1218],
+    ["Bela Vista", "Tecnico de Enfermagem", 258, 258, 226, 319, 446, 356],
+    ["Csu Eldorado", "Tecnico de Enfermagem", 1235, 1389, 1014, 663, 805, 610],
+    ["Jardim Bandeirantes", "Tecnico de Enfermagem", 1633, 1418, 1413, 2128, 2525, 2170],
+    ["Jardim Eldorado", "Tecnico de Enfermagem", 750, 665, 621, 851, 840, 795],
+    ["Novo Eldorado", "Tecnico de Enfermagem", 1814, 1749, 1676, 1446, 1941, 1937],
+    ["Parque São João", "Tecnico de Enfermagem", 720, 698, 835, 720, 693, 0],
+    ["Perobas", "Tecnico de Enfermagem", 142, 171, 231, 28, 5, 0],
+    ["Santa Cruz", "Tecnico de Enfermagem", 857, 1055, 926, 933, 1199, 1108],
+    ["Unidade Xv", "Tecnico de Enfermagem", 1084, 1208, 1389, 1258, 1163, 1527],
+    ["Agua Branca", "Terapeuta Ocupacional", 0, 0, 0, 0, 0, 7],
+    ["Jardim Eldorado", "Terapeuta Ocupacional", 0, 0, 0, 0, 1, 6],
+    ["Multi I", "Terapeuta Ocupacional", 0, 39, 42, 25, 41, 0],
+    ["Multi III", "Terapeuta Ocupacional", 0, 0, 0, 0, 43, 13],
+    ["Multi IV", "Terapeuta Ocupacional", 49, 51, 3, 6, 0, 0],
+    ["Novo Eldorado", "Terapeuta Ocupacional", 0, 0, 0, 0, 0, 3],
+    ["Perobas", "Terapeuta Ocupacional", 0, 0, 0, 0, 4, 14],
+    ["Unidade Xv", "Terapeuta Ocupacional", 0, 0, 0, 0, 0, 3]
 ];
 
-let dadosFiltrados = [...dadosOriginais];
-let chartUnidades = null;
-let chartMeses = null;
+const meses = ["jan./25", "fev./25", "mar./25", "abr./25", "mai./25", "jun./25"];
+const unidades = [...new Set(dados.map(item => item[0]))].sort();
+const cbos = [...new Set(dados.map(item => item[1]))].sort();
 
-// Registrar o plugin datalabels globalmente
-Chart.register(ChartDataLabels);
+let barChart, doughnutChart;
 
-console.log("Script carregado. Total de registros:", dadosOriginais.length);
+// Inicializar filtros
+function initializeFilters() {
+    const unidadeSelect = document.getElementById("unidadeFilter");
+    const cboSelect = document.getElementById("cboFilter");
 
-function calcularTotalAtendimentos() {
-    const total = dadosFiltrados.reduce((acc, dado) => {
-        return acc + dado.jan + dado.fev + dado.mar + dado.abr + dado.mai + dado.jun;
-    }, 0);
-    console.log("Total calculado:", total);
-    document.getElementById("totalAtendimentos").textContent = total.toLocaleString("pt-BR");
-}
-
-function filtrarDados() {
-    console.log("Iniciando filtro de dados...");
-    const mesSelecionado = document.getElementById("filtroMes").value;
-    const unidadesSelecionadas = Array.from(document.querySelectorAll("input[name=\'unidade\"]:checked")).map(cb => cb.value);
-    const cboSelecionados = Array.from(document.querySelectorAll("input[name=\'cbo\"]:checked")).map(cb => cb.value);
-
-    console.log("Filtros aplicados:", { mesSelecionado, unidadesSelecionadas, cboSelecionados });
-
-    dadosFiltrados = dadosOriginais.filter(dado => {
-        const mesCorresponde = mesSelecionado === "" || 
-            (mesSelecionado === "jan" && dado.jan > 0) ||
-            (mesSelecionado === "fev" && dado.fev > 0) ||
-            (mesSelecionado === "mar" && dado.mar > 0) ||
-            (mesSelecionado === "abr" && dado.abr > 0) ||
-            (mesSelecionado === "mai" && dado.mai > 0) ||
-            (mesSelecionado === "jun" && dado.jun > 0);
-        
-        const unidadeCorresponde = unidadesSelecionadas.length === 0 || unidadesSelecionadas.includes(dado.unidade);
-        const cboCorresponde = cboSelecionados.length === 0 || cboSelecionados.includes(dado.cbo);
-        
-        return mesCorresponde && unidadeCorresponde && cboCorresponde;
+    unidades.forEach(unidade => {
+        const option = document.createElement("option");
+        option.value = unidade;
+        option.textContent = unidade;
+        unidadeSelect.appendChild(option);
     });
 
-    console.log("Dados filtrados:", dadosFiltrados.length, "registros");
-    calcularTotalAtendimentos();
-    atualizarGraficos();
-    atualizarTabelaCBOs(); // Adicionado para garantir que a tabela seja atualizada
+    cbos.forEach(cbo => {
+        const option = document.createElement("option");
+        option.value = cbo;
+        option.textContent = cbo;
+        cboSelect.appendChild(option);
+    });
+
+    document.getElementById("mesFilter").addEventListener("change", updateChartsAndTable);
+    document.getElementById("unidadeFilter").addEventListener("change", updateChartsAndTable);
+    document.getElementById("cboFilter").addEventListener("change", updateChartsAndTable);
+
+    updateChartsAndTable(); // Initial load
 }
 
-function atualizarGraficos() {
-    console.log("Atualizando gráficos...");
-    
-    // Destruir gráficos existentes
-    if (chartUnidades) {
-        chartUnidades.destroy();
-        chartUnidades = null;
+// Atualizar gráficos e tabela
+function updateChartsAndTable() {
+    const selectedMes = document.getElementById("mesFilter").value;
+    const selectedUnidade = document.getElementById("unidadeFilter").value;
+    const selectedCBO = document.getElementById("cboFilter").value;
+
+    let filteredDados = dados.filter(item => {
+        const mesMatch = selectedMes === "" || meses[item.length - 7] === selectedMes; // Adjust index for month
+        const unidadeMatch = selectedUnidade === "" || item[0] === selectedUnidade;
+        const cboMatch = selectedCBO === "" || item[1] === selectedCBO;
+        return mesMatch && unidadeMatch && cboMatch;
+    });
+
+    // Atualizar Gráfico de Barras (Total por Unidade de Saúde)
+    updateBarChart(filteredDados);
+
+    // Atualizar Gráfico de Rosca (Distribuição por Mês)
+    updateDoughnutChart(filteredDados);
+
+    // Atualizar Tabela (Detalhamento por CBO e Unidade)
+    updateDataTable(filteredDados);
+}
+
+function updateBarChart(data) {
+    const ctx = document.getElementById("barChart").getContext("2d");
+    if (barChart) {
+        barChart.destroy();
     }
-    if (chartMeses) {
-        chartMeses.destroy();
-        chartMeses = null;
-    }
 
-    // Dados para o gráfico de Top 10 Unidades
-    const dadosPorUnidade = dadosFiltrados.reduce((acc, dado) => {
-        const total = dado.jan + dado.fev + dado.mar + dado.abr + dado.mai + dado.jun;
-        acc[dado.unidade] = (acc[dado.unidade] || 0) + total;
-        return acc;
-    }, {});
+    const unidadeTotals = {};
+    data.forEach(item => {
+        const unidade = item[0];
+        const total = item.slice(2, 8).reduce((sum, val) => sum + val, 0); // Sum values from index 2 to 7 (months)
+        unidadeTotals[unidade] = (unidadeTotals[unidade] || 0) + total;
+    });
 
-    const top10Unidades = Object.entries(dadosPorUnidade)
-        .sort(([, totalA], [, totalB]) => totalB - totalA)
-        .slice(0, 10);
+    const labels = Object.keys(unidadeTotals);
+    const values = Object.values(unidadeTotals);
 
-    const labelsUnidades = top10Unidades.map(([unidade,]) => unidade);
-    const dataUnidades = top10Unidades.map(([, total]) => total);
-
-    console.log("Top 10 Unidades:", labelsUnidades, dataUnidades);
-
-    // Gráfico de Barras - Top 10 Unidades
-    const ctxUnidades = document.getElementById("chartUnidades").getContext("2d");
-    chartUnidades = new Chart(ctxUnidades, {
+    barChart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: labelsUnidades,
+            labels: labels,
             datasets: [{
                 label: "Total de Atendimentos",
-                data: dataUnidades,
-                backgroundColor: "rgba(139, 0, 0, 0.8)", // Vermelho mais escuro
-                borderColor: "rgba(139, 0, 0, 1)",
+                data: values,
+                backgroundColor: "rgba(75, 192, 192, 0.6)",
+                borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: "x", // Barras verticais
-            plugins: {
-                legend: {
-                    display: false
-                },
-                datalabels: {
-                    display: true,
-                    anchor: "end",
-                    align: "top", // Alinhar no topo da barra
-                    formatter: (value) => value.toLocaleString("pt-BR"),
-                    color: "#000",
-                    font: {
-                        weight: "bold",
-                        size: 12
-                    }
-                }
-            },
             scales: {
-                x: {
-                    ticks: {
-                        font: {
-                            weight: "bold" // Nomes das unidades em negrito
-                        }
-                    }
-                },
                 y: {
                     beginAtZero: true
                 }
             }
         }
     });
+}
 
-    // Dados para o gráfico de Atendimentos por Mês
-    const dadosPorMes = dadosFiltrados.reduce((acc, dado) => {
-        acc.jan += dado.jan;
-        acc.fev += dado.fev;
-        acc.mar += dado.mar;
-        acc.abr += dado.abr;
-        acc.mai += dado.mai;
-        acc.jun += dado.jun;
-        return acc;
-    }, { jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0 });
+function updateDoughnutChart(data) {
+    const ctx = document.getElementById("doughnutChart").getContext("2d");
+    if (doughnutChart) {
+        doughnutChart.destroy();
+    }
 
-    const labelsMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
-    const dataMeses = [
-        dadosPorMes.jan,
-        dadosPorMes.fev,
-        dadosPorMes.mar,
-        dadosPorMes.abr,
-        dadosPorMes.mai,
-        dadosPorMes.jun
-    ];
-    const totalGeralMeses = dataMeses.reduce((sum, value) => sum + value, 0);
+    const mesTotals = {};
+    data.forEach(item => {
+        meses.forEach((mes, index) => {
+            const value = item[index + 2]; // Data starts from index 2
+            mesTotals[mes] = (mesTotals[mes] || 0) + value;
+        });
+    });
 
-    console.log("Dados por mês:", dataMeses, "Total:", totalGeralMeses);
-
+    const labels = Object.keys(mesTotals);
+    const values = Object.values(mesTotals);
     const backgroundColors = [
-        "#FF0000", // Janeiro - Vermelho vibrante
-        "#0000FF", // Fevereiro - Azul vibrante
-        "#FFFF00", // Março - Amarelo vibrante
-        "#008000", // Abril - Verde vibrante
-        "#800080", // Maio - Roxo vibrante
-        "#FFA500"  // Junho - Laranja vibrante
+        "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"
     ];
 
-    // Gráfico de Meses (Rosca)
-    const ctxMeses = document.getElementById("chartMeses").getContext("2d");
-    chartMeses = new Chart(ctxMeses, {
-        type: "doughnut", // Alterado para gráfico de rosca
+    doughnutChart = new Chart(ctx, {
+        type: "doughnut",
         data: {
-            labels: labelsMeses,
+            labels: labels,
             datasets: [{
-                label: "Total de Atendimentos",
-                data: dataMeses,
+                data: values,
                 backgroundColor: backgroundColors,
-                borderColor: "#fff",
-                borderWidth: 2
+                hoverOffset: 4
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                datalabels: {
-                    display: true,
-                    formatter: (value, ctx) => {
-                        if (value === 0) return "";
-                        let percentage = (value * 100 / totalGeralMeses).toFixed(1) + "%";
-                        return ctx.chart.data.labels[ctx.dataIndex] + "\n" + value.toLocaleString("pt-BR") + "\n" + percentage;
-                    },
-                    color: "#fff",
-                    font: {
-                        weight: "bold",
-                        size: 10
-                    }
-                },
                 legend: {
                     position: "top",
                 }
             }
         }
     });
-
-    // Atualizar tabela de CBOs
-    atualizarTabelaCBOs();
 }
 
-function atualizarTabelaCBOs() {
-    console.log("Atualizando tabela CBOs...");
-    const corpoTabelaCBOs = document.getElementById("corpoTabelaCBOs");
-    const tabelaCBOsHead = document.querySelector("#tabelaCBOs thead");
-    
-    if (!corpoTabelaCBOs || !tabelaCBOsHead) {
-        console.error("Elementos da tabela não encontrados!");
-        return;
-    }
-    
-    corpoTabelaCBOs.innerHTML = ""; // Limpar conteúdo anterior
-    tabelaCBOsHead.innerHTML = ""; // Limpar cabeçalho anterior
+function updateDataTable(data) {
+    const tbody = document.querySelector("#dataTable tbody");
+    tbody.innerHTML = ""; // Clear existing rows
 
-    // Obter todas as unidades únicas dos dados originais (para garantir que todas as colunas de unidade existam)
-    const todasUnidadesUnicas = [...new Set(dadosOriginais.map(dado => dado.unidade))].sort();
-
-    // Separar unidades normais das Multi
-    const unidadesNormais = todasUnidadesUnicas.filter(u => !u.startsWith("Multi")).sort();
-    const unidadesMulti = ["Multi I", "Multi II", "Multi III", "Multi IV"];
-
-    console.log("Unidades normais:", unidadesNormais);
-    console.log("Unidades Multi:", unidadesMulti);
-
-    // Agrupar dados por CBO e por Unidade
-    const dadosPorCBO = dadosFiltrados.reduce((acc, dado) => {
-        if (!acc[dado.cbo]) {
-            acc[dado.cbo] = { 
-                total: 0, 
-            };
-            // Inicializar todas as unidades (normais e Multi)
-            unidadesNormais.forEach(unidade => {
-                acc[dado.cbo][unidade] = 0;
-            });
-            unidadesMulti.forEach(unidade => {
-                acc[dado.cbo][unidade] = 0;
-            });
+    // Group data by CBO
+    const groupedByCBO = data.reduce((acc, item) => {
+        const cbo = item[1];
+        if (!acc[cbo]) {
+            acc[cbo] = [];
         }
-        
-        const totalDado = dado.jan + dado.fev + dado.mar + dado.abr + dado.mai + dado.jun;
-        acc[dado.cbo].total += totalDado;
-        
-        // Adicionar valores por unidade
-        acc[dado.cbo][dado.unidade] = (acc[dado.cbo][dado.unidade] || 0) + totalDado;
-        
+        acc[cbo].push(item);
         return acc;
     }, {});
 
-    console.log("Dados por CBO:", dadosPorCBO);
+    for (const cbo in groupedByCBO) {
+        const cboData = groupedByCBO[cbo];
 
-    // Criar cabeçalho da tabela
-    const headerRow = tabelaCBOsHead.insertRow();
-    const headers = ["CBO", ...unidadesNormais, ...unidadesMulti, "Total"];
-    headers.forEach(text => {
-        const th = document.createElement("th");
-        th.textContent = text;
-        th.className = "px-4 py-2 text-left bg-gray-50 font-bold border border-gray-300";
-        headerRow.appendChild(th);
-    });
+        // CBO row
+        const cboRow = tbody.insertRow();
+        cboRow.className = "bg-gray-100";
+        const cboCell = cboRow.insertCell();
+        cboCell.colSpan = 8; // Span across all columns
+        cboCell.className = "px-4 py-2 font-semibold text-gray-700";
+        cboCell.textContent = cbo;
 
-    // Preencher corpo da tabela
-    Object.entries(dadosPorCBO).sort().forEach(([cbo, totais]) => {
-        const row = corpoTabelaCBOs.insertRow();
-        row.className = "bg-white even:bg-gray-50 hover:bg-blue-50";
-        
-        // CBO
-        const cellCBO = row.insertCell();
-        cellCBO.textContent = cbo;
-        cellCBO.className = "px-4 py-2 font-semibold border border-gray-300";
-        
-        // Unidades normais
-        unidadesNormais.forEach(unidade => {
-            const cell = row.insertCell();
-            cell.textContent = (totais[unidade] || 0).toLocaleString("pt-BR");
-            cell.className = "px-4 py-2 text-center border border-gray-300";
+        // Add headers for months if not already present
+        if (tbody.querySelector("#dataTable thead tr").cells.length === 1) {
+            const headerRow = tbody.querySelector("#dataTable thead tr");
+            const thUnidade = document.createElement("th");
+            thUnidade.className = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
+            thUnidade.textContent = "Unidade de Saúde";
+            headerRow.appendChild(thUnidade);
+
+            meses.forEach(mes => {
+                const th = document.createElement("th");
+                th.className = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
+                th.textContent = mes;
+                headerRow.appendChild(th);
+            });
+            const thTotal = document.createElement("th");
+            thTotal.className = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
+            thTotal.textContent = "Total";
+            headerRow.appendChild(thTotal);
+        }
+
+        // Data rows for each unit under the CBO
+        cboData.forEach(item => {
+            const row = tbody.insertRow();
+            row.className = "hover:bg-gray-50";
+
+            const cboCellData = row.insertCell();
+            cboCellData.className = "px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900";
+            cboCellData.textContent = ""; // Empty for data rows under CBO
+
+            const unidadeCell = row.insertCell();
+            unidadeCell.className = "px-4 py-2 whitespace-nowrap text-sm text-gray-500";
+            unidadeCell.textContent = item[0]; // Unidade de Saúde
+
+            let rowTotal = 0;
+            for (let i = 2; i < 8; i++) {
+                const cell = row.insertCell();
+                cell.className = "px-4 py-2 whitespace-nowrap text-sm text-gray-500";
+                cell.textContent = item[i];
+                rowTotal += item[i];
+            }
+            const totalCell = row.insertCell();
+            totalCell.className = "px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-700";
+            totalCell.textContent = rowTotal;
         });
-        
-        // Unidades Multi
-        unidadesMulti.forEach(unidade => {
-            const cell = row.insertCell();
-            cell.textContent = (totais[unidade] || 0).toLocaleString("pt-BR");
-            cell.className = "px-4 py-2 text-center border border-gray-300";
-        });
-        
-        // Total
-        const cellTotal = row.insertCell();
-        cellTotal.textContent = totais.total.toLocaleString("pt-BR");
-        cellTotal.className = "px-4 py-2 text-center font-bold border border-gray-300 bg-blue-100";
-    });
 
-    console.log("Tabela CBO atualizada com", Object.keys(dadosPorCBO).length, "CBOs");
+        // Total row for the CBO
+        const cboTotalRow = tbody.insertRow();
+        cboTotalRow.className = "bg-gray-200";
+        const cboTotalCell = cboTotalRow.insertCell();
+        cboTotalCell.colSpan = 2; // Span CBO and Unidade columns
+        cboTotalCell.className = "px-4 py-2 font-bold text-gray-800 text-right";
+        cboTotalCell.textContent = `Total ${cbo}:`;
+
+        let totalCBO = 0;
+        meses.forEach((mes, index) => {
+            const mesSum = cboData.reduce((sum, item) => sum + item[index + 2], 0);
+            const cell = cboTotalRow.insertCell();
+            cell.className = "px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-800";
+            cell.textContent = mesSum;
+            totalCBO += mesSum;
+        });
+        const finalTotalCell = cboTotalRow.insertCell();
+        finalTotalCell.className = "px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-800";
+        finalTotalCell.textContent = totalCBO;
+    }
 }
 
-function popularFiltros() {
-    console.log("Populando filtros...");
-    const checkboxUnidadesDiv = document.getElementById("checkboxUnidades");
-    const checkboxCBOsDiv = document.getElementById("checkboxCBOs");
-
-    if (!checkboxUnidadesDiv || !checkboxCBOsDiv) {
-        console.error("Elementos de filtro não encontrados!");
-        return;
-    }
-
-    checkboxUnidadesDiv.innerHTML = "";
-    checkboxCBOsDiv.innerHTML = "";
-
-    const unidadesUnicas = [...new Set(dadosOriginais.map(dado => dado.unidade))].sort();
-    const cboUnicos = [...new Set(dadosOriginais.map(dado => dado.cbo))].sort();
-
-    console.log("Unidades únicas:", unidadesUnicas.length);
-    console.log("CBOs únicos:", cboUnicos.length);
-
-    // Popular checkboxes de Unidades
-    unidadesUnicas.forEach(unidade => {
-        const div = document.createElement("div");
-        div.className = "flex items-center";
-        div.innerHTML = `
-            <input type="checkbox" id="unidade-${unidade.replace(/\s/g, "")}" name="unidade" value="${unidade}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-            <label for="unidade-${unidade.replace(/\s/g, "")}" class="ml-2 text-sm text-gray-700">${unidade}</label>
-        `;
-        checkboxUnidadesDiv.appendChild(div);
-    });
-
-    // Popular checkboxes de CBOs
-    cboUnicos.forEach(cbo => {
-        const div = document.createElement("div");
-        div.className = "flex items-center";
-        div.innerHTML = `
-            <input type="checkbox" id="cbo-${cbo.replace(/\s/g, "")}" name="cbo" value="${cbo}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-            <label for="cbo-${cbo.replace(/\s/g, "")}" class="ml-2 text-sm text-gray-700">${cbo}</label>
-        `;
-        checkboxCBOsDiv.appendChild(div);
-    });
-
-    console.log("Filtros populados com sucesso!");
-
-    // Adicionar event listeners para atualização automática
-    document.getElementById("filtroMes").addEventListener("change", filtrarDados);
-    // Adicionar event listeners para os checkboxes de unidade e CBO
-    // Estes listeners precisam ser adicionados APÓS os elementos serem criados no DOM
-    // Portanto, eles são movidos para dentro da função popularFiltros
-    document.querySelectorAll("input[name=\'unidade\"]").forEach(cb => {
-        cb.addEventListener("change", filtrarDados);
-    });
-    document.querySelectorAll("input[name=\'cbo\"]").forEach(cb => {
-        cb.addEventListener("change", filtrarDados);
-    });
-}
-
-// Event Listeners
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM carregado, iniciando aplicação...");
-    
-    try {
-        popularFiltros();
-        // Remover event listener do botão Atualizar, pois a atualização será automática
-        const btnAtualizar = document.getElementById("btnAtualizar");
-        if (btnAtualizar) {
-            btnAtualizar.removeEventListener("click", filtrarDados);
-            console.log("Event listener do botão Atualizar removido");
-        }
-
-        const btnLimpar = document.getElementById("btnLimpar");
-        if (btnLimpar) {
-            btnLimpar.addEventListener("click", () => {
-                console.log("Limpando filtros...");
-                document.getElementById("filtroMes").value = "";
-                document.querySelectorAll("input[name=\'unidade\"]").forEach(cb => cb.checked = false);
-                document.querySelectorAll("input[name=\'cbo\"]").forEach(cb => cb.checked = false);
-                dadosFiltrados = [...dadosOriginais];
-                calcularTotalAtendimentos();
-                atualizarGraficos();
-                atualizarTabelaCBOs(); // Adicionado para garantir que a tabela seja atualizada ao limpar
-            });
-            console.log("Event listener do botão Limpar adicionado");
-        }
-        
-        const btnDownload = document.getElementById("btnDownload");
-        if (btnDownload) {
-            btnDownload.addEventListener("click", () => {
-                alert("Funcionalidade de download em desenvolvimento!");
-            });
-            console.log("Event listener do botão Download adicionado");
-        }
-
-        // Chamar filtrarDados() para carregar os dados iniciais e renderizar tudo
-        filtrarDados();
-        
-        console.log("Aplicação inicializada com sucesso!");
-    } catch (error) {
-        console.error("Erro na inicialização:", error);
-    }
-});
-
+// Chamar a função de inicialização quando o DOM estiver carregado
+document.addEventListener("DOMContentLoaded", initializeFilters);
 
