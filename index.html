@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distrito Sanitário Eldorado - Painel de Atendimentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Header -->
+        <div class="header-bg text-center mb-8 py-8 rounded-lg">
+            <h1 class="text-4xl font-bold header-text-shadow mb-2 text-white">Distrito Sanitário Eldorado</h1>
+            <h2 class="text-xl mb-1 opacity-90 text-white">Registros de atendimentos Geral</h2> 
+            <h2 class="text-xl opacity-90 text-white">1º Semestre/2025</h2>
+        </div>
+
+        <!-- Filtros -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-filter mr-2 text-blue-600"></i>Filtros
+            </h3>
+            <div class="filter-grid">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mês</label>
+                    <select id="mesFilter" multiple class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent multi-select">
+                        <option value="jan./25">Janeiro 2025</option>
+                        <option value="fev./25">Fevereiro 2025</option>
+                        <option value="mar./25">Março 2025</option>
+                        <option value="abr./25">Abril 2025</option>
+                        <option value="mai./25">Maio 2025</option>
+                        <option value="jun./25">Junho 2025</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Unidade de Saúde</label>
+                    <select id="unidadeFilter" multiple class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent multi-select">
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">CBO</label>
+                    <select id="cboFilter" multiple class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent multi-select">
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="flex flex-wrap gap-3 mt-6">
+                <button id="clearFiltersBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md transition duration-200 flex items-center">
+                    <i class="fas fa-eraser mr-2"></i>
+                    Limpar Filtros
+                </button>
+                <button id="exportExcelBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-200 flex items-center">
+                    <i class="fas fa-file-excel mr-2"></i>
+                    Baixar Excel
+                </button>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="dashboard-grid mb-6">
+            <!-- Gráfico de Barras -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-bar mr-2 text-red-600"></i>Total por Unidade de Saúde
+                </h3>
+                <div class="chart-container-bar">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Rosca -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie mr-2 text-blue-600"></i>Distribuição por Mês
+                </h3>
+                <div class="chart-container">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-table mr-2 text-green-600"></i>Detalhamento por CBO e Unidade
+            </h3>
+            <div class="table-container">
+                <table id="dataTable" class="min-w-full table-auto border-collapse">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">CBO</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script_reintegrated.js"></script>
+</body>
+</html>
+
