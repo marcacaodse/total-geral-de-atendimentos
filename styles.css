@@ -1,37 +1,60 @@
 @media print {
     body { 
-        print-color-adjust: exact; 
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+    * { 
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 }
 
+.header-bg {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.header-text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 .chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+.chart-container-bar {
     position: relative;
     height: 500px;
     width: 100%;
 }
 
-/* Estilo para o cabeçalho azul escuro */
-.header-container {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+.table-container {
+    max-height: 500px;
+    overflow-y: auto;
 }
 
-/* Efeitos adicionais para melhor apresentação */
-.header-container h1 {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
 
-.header-container h2 {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Responsividade para dispositivos móveis */
-@media (max-width: 768px) {
-    .header-container h1 {
-        font-size: 2rem;
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
     }
-    
-    .header-container h2 {
-        font-size: 1rem;
-    }
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+/* Força as cores do cabeçalho */
+.header-bg {
+    background-color: #1e3a8a !important;
+    background-image: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
 }
