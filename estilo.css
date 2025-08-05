@@ -1,0 +1,103 @@
+
+.header-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header-text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+.chart-container-bar {
+    position: relative;
+    height: 500px; /* Aumentada a altura para melhor visualização */
+    width: 100%;
+    padding: 20px 10px; /* Adicionado padding para evitar cortes */
+}
+
+.chart-container {
+    position: relative;
+    height: 400px; /* Aumentada a altura */
+    width: 100%;
+    padding: 20px;
+}
+
+.table-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+#dataTable {
+    min-width: 100%;
+    width: max-content; /* Permite que a tabela use o espaço necessário */
+}
+
+#dataTable th, #dataTable td {
+    white-space: nowrap;
+    min-width: 80px; /* Largura mínima para as colunas */
+    text-align: center;
+}
+
+#dataTable th:first-child, #dataTable td:first-child {
+    min-width: 200px; /* Largura maior para a primeira coluna (CBO) */
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+/* Melhorias para responsividade */
+@media (max-width: 768px) {
+    .chart-container-bar {
+        height: 400px;
+        padding: 10px 5px;
+    }
+    
+    .chart-container {
+        height: 300px;
+        padding: 10px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Estilos para melhorar a aparência geral */
+.bg-white {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Correção para evitar overflow horizontal */
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+
