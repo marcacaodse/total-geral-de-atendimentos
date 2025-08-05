@@ -158,121 +158,80 @@ let barChart, doughnutChart;
 
 // Inicializar filtros
 function initializeFilters() {
-    const unidadeSelect = document.getElementById("unidadeFilter");
-    const cboSelect = document.getElementById("cboFilter");
+    const unidadeSelect = document.getElementById('unidadeFilter');
+    const cboSelect = document.getElementById('cboFilter');
 
     unidades.forEach(unidade => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = unidade;
         option.textContent = unidade;
         unidadeSelect.appendChild(option);
     });
 
     cbos.forEach(cbo => {
-        const option = document.createElement("option");
+        const option = document.createElement('option');
         option.value = cbo;
         option.textContent = cbo;
         cboSelect.appendChild(option);
     });
-
-    document.getElementById("mesFilter").addEventListener("change", updateChartsAndTable);
-    document.getElementById("unidadeFilter").addEventListener("change", updateChartsAndTable);
-    document.getElementById("cboFilter").addEventListener("change", updateChartsAndTable);
-
-    updateChartsAndTable(); // Initial load
 }
 
-// Atualizar gráficos e tabela
-function updateChartsAndTable() {
-    const selectedMes = document.getElementById("mesFilter").value;
-    const selectedUnidade = document.getElementById("unidadeFilter").value;
-    const selectedCBO = document.getElementById("cboFilter").value;
+// Filtrar dados
+function filterData() {
+    const mesFilter = document.getElementById('mesFilter').value;
+    const unidadeFilter = document.getElementById('unidadeFilter').value;
+    const cboFilter = document.getElementById('cboFilter').value;
 
-    let filteredDados = dados.filter(item => {
-        const mesMatch = selectedMes === "" || meses[item.length - 7] === selectedMes; // Adjust index for month
-        const unidadeMatch = selectedUnidade === "" || item[0] === selectedUnidade;
-        const cboMatch = selectedCBO === "" || item[1] === selectedCBO;
-        return mesMatch && unidadeMatch && cboMatch;
+    return dados.filter(item => {
+        const unidadeMatch = !unidadeFilter || item[0] === unidadeFilter;
+        const cboMatch = !cboFilter || item[1] === cboFilter;
+        return unidadeMatch && cboMatch;
     });
-
-    // Atualizar Gráfico de Barras (Total por Unidade de Saúde)
-    updateBarChart(filteredDados);
-
-    // Atualizar Gráfico de Rosca (Distribuição por Mês)
-    updateDoughnutChart(filteredDados);
-
-    // Atualizar Tabela (Detalhamento por CBO e Unidade)
-    updateDataTable(filteredDados);
 }
 
-function updateBarChart(data) {
-    const ctx = document.getElementById("barChart").getContext("2d");
+// Criar gráfico de barras
+function createBarChart() {
+    const ctx = document.getElementById('barChart').getContext('2d');
+    
     if (barChart) {
         barChart.destroy();
     }
 
-    const unidadeTotals = {};
-    data.forEach(item => {
-        const unidade = item[0];
-        const total = item.slice(2, 8).reduce((sum, val) => sum + val, 0); // Sum values from index 2 to 7 (months)
-        unidadeTotals[unidade] = (unidadeTotals[unidade] || 0) + total;
-    });
+    const filteredData = filterData();
+    const mesFilter = document.getElementById('mesFilter').value;
+    
+    let unidadeTotals = {};
 
-    const labels = Object.keys(unidadeTotals);
-    const values = Object.values(unidadeTotals);
-
-    barChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Total de Atendimentos",
-                data: values,
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+    if (mesFilter) {
+        const mesIndex = meses.indexOf(mesFilter) + 2;
+        filteredData.forEach(item => {
+            if (!unidadeTotals[item[0]]) {
+                unidadeTotals[item[0]] = 0;
             }
-        }
-    });
-}
-
-function updateDoughnutChart(data) {
-    const ctx = document.getElementById("doughnutChart").getContext("2d");
-    if (doughnutChart) {
-        doughnutChart.destroy();
+            unidadeTotals[item[0]] += item[mesIndex] || 0;
+        });
+    } else {
+        filteredData.forEach(item => {
+            if (!unidadeTotals[item[0]]) {
+                unidadeTotals[item[0]] = 0;
+            }
+            for (let i = 2; i < 8; i++) {
+                unidadeTotals[item[0]] += item[i] || 0;
+            }
+        });
     }
 
-    const mesTotals = {};
-    data.forEach(item => {
-        meses.forEach((mes, index) => {
-            const value = item[index + 2]; // Data starts from index 2
-            mesTotals[mes] = (mesTotals[mes] || 0) + value;
-        });
-    });
+    const labels = Object.keys(unidadeTotals).sort();
+    const values = labels.map(label => unidadeTotals[label]);
 
-    const labels = Object.keys(mesTotals);
-    const values = Object.values(mesTotals);
-    const backgroundColors = [
-        "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"
-    ];
-
-    doughnutChart = new Chart(ctx, {
-        type: "doughnut",
+    barChart = new Chart(ctx, {
+        type: 'bar',
         data: {
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: backgroundColors,
-                hoverOffset: 4
+                backgroundColor: '#dc2626',
+                borderWidth: 0
             }]
         },
         options: {
@@ -280,105 +239,301 @@ function updateDoughnutChart(data) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: "top",
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function() {
+                            return '';
+                        },
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#000000',
+                        font: {
+                            weight: 'bold',
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    display: false,
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 40
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillStyle = '#000000';
+                    ctx.textAlign = 'center';
+                    
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillText(data, bar.x, bar.y - 10);
+                            }
+                        });
+                    });
                 }
             }
         }
     });
 }
 
-function updateDataTable(data) {
-    const tbody = document.querySelector("#dataTable tbody");
-    tbody.innerHTML = ""; // Clear existing rows
-
-    // Group data by CBO
-    const groupedByCBO = data.reduce((acc, item) => {
-        const cbo = item[1];
-        if (!acc[cbo]) {
-            acc[cbo] = [];
-        }
-        acc[cbo].push(item);
-        return acc;
-    }, {});
-
-    for (const cbo in groupedByCBO) {
-        const cboData = groupedByCBO[cbo];
-
-        // CBO row
-        const cboRow = tbody.insertRow();
-        cboRow.className = "bg-gray-100";
-        const cboCell = cboRow.insertCell();
-        cboCell.colSpan = 8; // Span across all columns
-        cboCell.className = "px-4 py-2 font-semibold text-gray-700";
-        cboCell.textContent = cbo;
-
-        // Add headers for months if not already present
-        if (tbody.querySelector("#dataTable thead tr").cells.length === 1) {
-            const headerRow = tbody.querySelector("#dataTable thead tr");
-            const thUnidade = document.createElement("th");
-            thUnidade.className = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
-            thUnidade.textContent = "Unidade de Saúde";
-            headerRow.appendChild(thUnidade);
-
-            meses.forEach(mes => {
-                const th = document.createElement("th");
-                th.className = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
-                th.textContent = mes;
-                headerRow.appendChild(th);
-            });
-            const thTotal = document.createElement("th");
-            thTotal.className = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
-            thTotal.textContent = "Total";
-            headerRow.appendChild(thTotal);
-        }
-
-        // Data rows for each unit under the CBO
-        cboData.forEach(item => {
-            const row = tbody.insertRow();
-            row.className = "hover:bg-gray-50";
-
-            const cboCellData = row.insertCell();
-            cboCellData.className = "px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900";
-            cboCellData.textContent = ""; // Empty for data rows under CBO
-
-            const unidadeCell = row.insertCell();
-            unidadeCell.className = "px-4 py-2 whitespace-nowrap text-sm text-gray-500";
-            unidadeCell.textContent = item[0]; // Unidade de Saúde
-
-            let rowTotal = 0;
-            for (let i = 2; i < 8; i++) {
-                const cell = row.insertCell();
-                cell.className = "px-4 py-2 whitespace-nowrap text-sm text-gray-500";
-                cell.textContent = item[i];
-                rowTotal += item[i];
-            }
-            const totalCell = row.insertCell();
-            totalCell.className = "px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-700";
-            totalCell.textContent = rowTotal;
-        });
-
-        // Total row for the CBO
-        const cboTotalRow = tbody.insertRow();
-        cboTotalRow.className = "bg-gray-200";
-        const cboTotalCell = cboTotalRow.insertCell();
-        cboTotalCell.colSpan = 2; // Span CBO and Unidade columns
-        cboTotalCell.className = "px-4 py-2 font-bold text-gray-800 text-right";
-        cboTotalCell.textContent = `Total ${cbo}:`;
-
-        let totalCBO = 0;
-        meses.forEach((mes, index) => {
-            const mesSum = cboData.reduce((sum, item) => sum + item[index + 2], 0);
-            const cell = cboTotalRow.insertCell();
-            cell.className = "px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-800";
-            cell.textContent = mesSum;
-            totalCBO += mesSum;
-        });
-        const finalTotalCell = cboTotalRow.insertCell();
-        finalTotalCell.className = "px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-800";
-        finalTotalCell.textContent = totalCBO;
+// Criar gráfico de rosca
+function createDoughnutChart() {
+    const ctx = document.getElementById('doughnutChart').getContext('2d');
+    
+    if (doughnutChart) {
+        doughnutChart.destroy();
     }
+
+    const filteredData = filterData();
+    const mesFilter = document.getElementById('mesFilter').value;
+    let monthTotals = {};
+    let centerText = '';
+
+    if (mesFilter) {
+        // Se um mês específico for selecionado, mostrar apenas esse mês
+        const mesIndex = meses.indexOf(mesFilter) + 2;
+        const total = filteredData.reduce((sum, item) => sum + (item[mesIndex] || 0), 0);
+        monthTotals[mesFilter] = total;
+        
+        const mesNomes = {
+            'jan./25': 'Janeiro',
+            'fev./25': 'Fevereiro', 
+            'mar./25': 'Março',
+            'abr./25': 'Abril',
+            'mai./25': 'Maio',
+            'jun./25': 'Junho'
+        };
+        centerText = `${mesNomes[mesFilter]}\n${total}`;
+    } else {
+        // Mostrar todos os meses
+        meses.forEach((mes, index) => {
+            monthTotals[mes] = 0;
+            filteredData.forEach(item => {
+                monthTotals[mes] += item[index + 2] || 0;
+            });
+        });
+        const totalGeral = Object.values(monthTotals).reduce((a, b) => a + b, 0);
+        centerText = `Total Geral\n${totalGeral}`;
+    }
+
+    const labels = Object.keys(monthTotals);
+    const values = Object.values(monthTotals);
+    const total = values.reduce((a, b) => a + b, 0);
+
+    const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+    // Plugin para texto central
+    const centerTextPlugin = {
+        id: 'centerText',
+        afterDatasetsDraw: function(chart) {
+            const ctx = chart.ctx;
+            const centerX = chart.width / 2;
+            const centerY = chart.height / 2;
+            
+            ctx.restore();
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#374151';
+            
+            const lines = centerText.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, centerX, centerY + (index * 20) - (lines.length - 1) * 10);
+            });
+            ctx.save();
+        }
+    };
+
+    doughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels.map(mes => {
+                const mesNome = {
+                    'jan./25': 'Janeiro',
+                    'fev./25': 'Fevereiro', 
+                    'mar./25': 'Março',
+                    'abr./25': 'Abril',
+                    'mai./25': 'Maio',
+                    'jun./25': 'Junho'
+                };
+                return mesNome[mes] || mes;
+            }),
+            datasets: [{
+                data: values,
+                backgroundColor: colors.slice(0, values.length),
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '50%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map((label, i) => {
+                                    const value = data.datasets[0].data[i];
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return {
+                                        text: `${label}: ${value} (${percentage}%)`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].borderColor,
+                                        lineWidth: data.datasets[0].borderWidth,
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed;
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `${context.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [centerTextPlugin]
+    });
 }
 
-// Chamar a função de inicialização quando o DOM estiver carregado
-document.addEventListener("DOMContentLoaded", initializeFilters);
+// Criar tabela
+function createTable() {
+    const filteredData = filterData();
+    const mesFilter = document.getElementById('mesFilter').value;
+    
+    let tableData = {};
 
+    // Organizar dados por CBO
+    cbos.forEach(cbo => {
+        tableData[cbo] = {};
+        unidades.forEach(unidade => {
+            tableData[cbo][unidade] = 0;
+        });
+    });
+
+    if (mesFilter) {
+        const mesIndex = meses.indexOf(mesFilter) + 2;
+        filteredData.forEach(item => {
+            if (tableData[item[1]]) {
+                tableData[item[1]][item[0]] = item[mesIndex] || 0;
+            }
+        });
+    } else {
+        filteredData.forEach(item => {
+            if (tableData[item[1]]) {
+                let total = 0;
+                for (let i = 2; i < 8; i++) {
+                    total += item[i] || 0;
+                }
+                tableData[item[1]][item[0]] = total;
+            }
+        });
+    }
+
+    // Criar cabeçalho da tabela
+    const table = document.getElementById('dataTable');
+    const thead = table.querySelector('thead tr');
+    thead.innerHTML = '<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CBO</th>';
+    
+    unidades.forEach(unidade => {
+        const th = document.createElement('th');
+        th.className = 'px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+        th.textContent = unidade;
+        thead.appendChild(th);
+    });
+
+    // Adicionar coluna total
+    const totalTh = document.createElement('th');
+    totalTh.className = 'px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+    totalTh.textContent = 'Total';
+    thead.appendChild(totalTh);
+
+    // Criar corpo da tabela
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+
+    Object.keys(tableData).forEach(cbo => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50';
+
+        // CBO
+        const tdCbo = document.createElement('td');
+        tdCbo.className = 'px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900';
+        tdCbo.textContent = cbo;
+        tr.appendChild(tdCbo);
+
+        let rowTotal = 0;
+
+        // Dados por unidade
+        unidades.forEach(unidade => {
+            const td = document.createElement('td');
+            td.className = 'px-4 py-2 whitespace-nowrap text-sm text-gray-500';
+            const value = tableData[cbo][unidade] || 0;
+            td.textContent = value;
+            rowTotal += value;
+            tr.appendChild(td);
+        });
+
+        // Total da linha
+        const tdTotal = document.createElement('td');
+        tdTotal.className = 'px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900';
+        tdTotal.textContent = rowTotal;
+        tr.appendChild(tdTotal);
+
+        tbody.appendChild(tr);
+    });
+}
+
+// Atualizar visualizações
+function updateVisualization() {
+    createBarChart();
+    createDoughnutChart();
+    createTable();
+}
+
+// Event listeners para filtros
+document.getElementById('mesFilter').addEventListener('change', updateVisualization);
+document.getElementById('unidadeFilter').addEventListener('change', updateVisualization);
+document.getElementById('cboFilter').addEventListener('change', updateVisualization);
+
+// Inicializar aplicação
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFilters();
+    updateVisualization();
+});
