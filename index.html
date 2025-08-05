@@ -4,284 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distrito Sanitário Eldorado - Painel de Atendimentos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Cabeçalho azul */
-        .header-azul {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            color: white;
-            padding: 2rem 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-azul h1 {
-            font-size: 2.5em;
-            text-align: center;
-            margin: 0;
-            font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .header-azul p {
-            text-align: center;
-            margin: 0.5rem 0 0 0;
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        h2, h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-
-        h2 {
-            font-size: 1.8em;
-            color: #1e40af;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-        }
-
-        h3 {
-            font-size: 1.4em;
-            color: #555;
-        }
-
-        .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .filters label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #1e40af;
-        }
-
-        .filters select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            background-color: #fdfdfd;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
-        }
-
-        .filters select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        /* Gráfico de barras maior */
-        .chart-container {
-            position: relative;
-            height: 500px; /* Aumentado de 400px para 500px */
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        /* Gráfico de rosca com altura específica */
-        .chart-container-doughnut {
-            position: relative;
-            height: 450px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .data-table th, .data-table td {
-            border: 1px solid #e5e7eb;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .data-table th {
-            background-color: #f8fafc;
-            font-weight: bold;
-            color: #1e40af;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .data-table tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        .data-table tr:hover {
-            background-color: #f3f4f6;
-        }
-
-        .total-geral {
-            font-size: 2em;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-            color: #1e40af;
-        }
-
-        /* Melhorias visuais */
-        .icon {
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
 </head>
-<body>
-    <!-- Cabeçalho azul -->
-    <header class="header-azul">
-        <h1>Distrito Sanitário Eldorado</h1>
-        <p>Painel de Atendimentos - Registros de atendimentos geral_Vivver</p>
-    </header>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Distrito Sanitário Eldorado</h1>
+            <h2 class="text-xl text-gray-600">Registros de atendimentos Geral</h2>
+            <h3 class="text-xl text-gray-600">1º Semestre/2025</h3>
+        </div>
 
-    <div class="container">
-        <div class="card">
-            <h2><span class="icon">🔍</span>Filtros</h2>
-            <div class="filters grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Filtros -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-filter mr-2"></i>Filtros
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label for="month-select">Mês</label>
-                    <select id="month-select">
-                        <option value="all">Todos os meses</option>
-                        <option value="2025-01">Janeiro 2025</option>
-                        <option value="2025-02">Fevereiro 2025</option>
-                        <option value="2025-03">Março 2025</option>
-                        <option value="2025-04">Abril 2025</option>
-                        <option value="2025-05">Maio 2025</option>
-                        <option value="2025-06">Junho 2025</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mês</label>
+                    <select id="mesFilter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Todos os meses</option>
+                        <option value="jan./25">Janeiro 2025</option>
+                        <option value="fev./25">Fevereiro 2025</option>
+                        <option value="mar./25">Março 2025</option>
+                        <option value="abr./25">Abril 2025</option>
+                        <option value="mai./25">Maio 2025</option>
+                        <option value="jun./25">Junho 2025</option>
                     </select>
                 </div>
                 <div>
-                    <label for="unit-select">Unidade de Saúde</label>
-                    <select id="unit-select">
-                        <option value="all">Todas as unidades</option>
-                        <option value="Agua Branca">Agua Branca</option>
-                        <option value="Bela Vista">Bela Vista</option>
-                        <option value="Csu Eldorado">Csu Eldorado</option>
-                        <option value="Jardim Bandeirantes">Jardim Bandeirantes</option>
-                        <option value="Jardim Eldorado">Jardim Eldorado</option>
-                        <option value="Multi I">Multi I</option>
-                        <option value="Multi II">Multi II</option>
-                        <option value="Multi III">Multi III</option>
-                        <option value="Multi IV">Multi IV</option>
-                        <option value="Novo Eldorado">Novo Eldorado</option>
-                        <option value="Parque São João">Parque São João</option>
-                        <option value="Perobas">Perobas</option>
-                        <option value="Santa Cruz">Santa Cruz</option>
-                        <option value="Unidade Xv">Unidade Xv</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Unidade de Saúde</label>
+                    <select id="unidadeFilter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Todas as unidades</option>
                     </select>
                 </div>
                 <div>
-                    <label for="cbo-select">CBO</label>
-                    <select id="cbo-select">
-                        <option value="all">Todos os CBOs</option>
-                        <option value="Assistente Social">Assistente Social</option>
-                        <option value="Auxiliar de enfermagem">Auxiliar de enfermagem</option>
-                        <option value="Cirurgião Dentista">Cirurgião Dentista</option>
-                        <option value="Enfermeiro">Enfermeiro</option>
-                        <option value="Fisioterapeuta">Fisioterapeuta</option>
-                        <option value="Fisioterapeuta/Emulti">Fisioterapeuta/Emulti</option>
-                        <option value="Fonoaudiologo">Fonoaudiologo</option>
-                        <option value="Médico Clinico">Médico Clinico</option>
-                        <option value="Médico Estrategia da Familia">Médico Estrategia da Familia</option>
-                        <option value="Médico Ginecologista Obstetra">Médico Ginecologista Obstetra</option>
-                        <option value="Médico Pediatra">Médico Pediatra</option>
-                        <option value="Médico Psiquiatra">Médico Psiquiatra</option>
-                        <option value="Médico Residente">Médico Residente</option>
-                        <option value="Nutricionista">Nutricionista</option>
-                        <option value="Professor de Educação Fisica">Professor de Educação Fisica</option>
-                        <option value="Professor de medicina">Professor de medicina</option>
-                        <option value="Pscologo Clinico">Pscologo Clinico</option>
-                        <option value="Tecnico de Enfermagem">Tecnico de Enfermagem</option>
-                        <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">CBO</label>
+                    <select id="cboFilter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Todos os CBOs</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2><span class="icon">📊</span>Total por Unidade de Saúde</h2>
-            <div class="chart-container">
-                <canvas id="unitChart"></canvas>
+        <!-- Gráficos -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Gráfico de Barras -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-bar mr-2"></i>Total por Unidade de Saúde
+                </h3>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Rosca -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie mr-2"></i>Distribuição por Mês
+                </h3>
+                <div class="chart-container">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2><span class="icon">🥧</span>Distribuição por Mês</h2>
-            <div class="chart-container-doughnut">
-                <canvas id="monthChart"></canvas>
-            </div>
-            <p class="total-geral">Total Geral: <span id="total-atendimentos">154867</span></p>
-        </div>
-
-        <div class="card">
-            <h2><span class="icon">📋</span>Detalhamento por CBO e Unidade</h2>
+        <!-- Tabela -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-table mr-2"></i>Detalhamento por CBO e Unidade
+            </h3>
             <div class="overflow-x-auto">
-                <table class="data-table">
-                    <thead>
+                <table id="dataTable" class="min-w-full table-auto">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th>CBO</th>
-                            <th>Agua Branca</th>
-                            <th>Bela Vista</th>
-                            <th>Csu Eldorado</th>
-                            <th>Jardim Bandeirantes</th>
-                            <th>Jardim Eldorado</th>
-                            <th>Multi I</th>
-                            <th>Multi II</th>
-                            <th>Multi III</th>
-                            <th>Multi IV</th>
-                            <th>Novo Eldorado</th>
-                            <th>Parque São João</th>
-                            <th>Perobas</th>
-                            <th>Santa Cruz</th>
-                            <th>Unidade Xv</th>
-                            <th>Total</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CBO</th>
                         </tr>
                     </thead>
-                    <tbody id="data-table-body">
-                        <!-- Dados serão inseridos via JavaScript -->
+                    <tbody class="bg-white divide-y divide-gray-200">
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <script src="script_melhorado.js"></script>
+    <script src="script_reintegrated.js"></script>
 </body>
 </html>
+
