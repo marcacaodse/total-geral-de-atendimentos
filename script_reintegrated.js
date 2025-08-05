@@ -258,30 +258,41 @@ function createBarChart() {
                         color: '#000000',
                         font: {
                             weight: 'bold',
-                            size: 12
-                        }
+                            size: 10
+                        },
+                        maxRotation: 45,
+                        minRotation: 45
                     },
                     grid: {
                         display: false
                     }
                 },
                 y: {
-                    display: false,
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#666666',
+                        font: {
+                            size: 10
+                        }
+                    },
                     grid: {
-                        display: false
+                        color: '#e5e7eb'
                     }
                 }
             },
             layout: {
                 padding: {
-                    top: 40
+                    top: 30,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
                 }
             },
             animation: {
                 onComplete: function() {
                     const chart = this;
                     const ctx = chart.ctx;
-                    ctx.font = 'bold 14px Arial';
+                    ctx.font = 'bold 11px Arial';
                     ctx.fillStyle = '#000000';
                     ctx.textAlign = 'center';
                     
@@ -290,7 +301,7 @@ function createBarChart() {
                         meta.data.forEach((bar, index) => {
                             const data = dataset.data[index];
                             if (data > 0) {
-                                ctx.fillText(data, bar.x, bar.y - 10);
+                                ctx.fillText(data, bar.x, bar.y - 8);
                             }
                         });
                     });
@@ -314,7 +325,6 @@ function createDoughnutChart() {
     let centerText = '';
 
     if (mesFilter) {
-        // Se um mês específico for selecionado, mostrar apenas esse mês
         const mesIndex = meses.indexOf(mesFilter) + 2;
         const total = filteredData.reduce((sum, item) => sum + (item[mesIndex] || 0), 0);
         monthTotals[mesFilter] = total;
@@ -329,7 +339,6 @@ function createDoughnutChart() {
         };
         centerText = `${mesNomes[mesFilter]}\n${total}`;
     } else {
-        // Mostrar todos os meses
         meses.forEach((mes, index) => {
             monthTotals[mes] = 0;
             filteredData.forEach(item => {
@@ -346,7 +355,6 @@ function createDoughnutChart() {
 
     const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
-    // Plugin para texto central
     const centerTextPlugin = {
         id: 'centerText',
         afterDatasetsDraw: function(chart) {
@@ -439,7 +447,6 @@ function createTable() {
     
     let tableData = {};
 
-    // Organizar dados por CBO
     cbos.forEach(cbo => {
         tableData[cbo] = {};
         unidades.forEach(unidade => {
@@ -466,25 +473,22 @@ function createTable() {
         });
     }
 
-    // Criar cabeçalho da tabela
     const table = document.getElementById('dataTable');
     const thead = table.querySelector('thead tr');
-    thead.innerHTML = '<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CBO</th>';
+    thead.innerHTML = '<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">CBO</th>';
     
     unidades.forEach(unidade => {
         const th = document.createElement('th');
-        th.className = 'px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+        th.className = 'px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200';
         th.textContent = unidade;
         thead.appendChild(th);
     });
 
-    // Adicionar coluna total
     const totalTh = document.createElement('th');
-    totalTh.className = 'px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+    totalTh.className = 'px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200';
     totalTh.textContent = 'Total';
     thead.appendChild(totalTh);
 
-    // Criar corpo da tabela
     const tbody = table.querySelector('tbody');
     tbody.innerHTML = '';
 
@@ -492,27 +496,24 @@ function createTable() {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-gray-50';
 
-        // CBO
         const tdCbo = document.createElement('td');
-        tdCbo.className = 'px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900';
+        tdCbo.className = 'px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200';
         tdCbo.textContent = cbo;
         tr.appendChild(tdCbo);
 
         let rowTotal = 0;
 
-        // Dados por unidade
         unidades.forEach(unidade => {
             const td = document.createElement('td');
-            td.className = 'px-4 py-2 whitespace-nowrap text-sm text-gray-500';
+            td.className = 'px-4 py-3 whitespace-nowrap text-sm text-gray-600 text-center';
             const value = tableData[cbo][unidade] || 0;
             td.textContent = value;
             rowTotal += value;
             tr.appendChild(td);
         });
 
-        // Total da linha
         const tdTotal = document.createElement('td');
-        tdTotal.className = 'px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900';
+        tdTotal.className = 'px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-900 bg-gray-50 border-l border-gray-200';
         tdTotal.textContent = rowTotal;
         tr.appendChild(tdTotal);
 
@@ -520,19 +521,16 @@ function createTable() {
     });
 }
 
-// Atualizar visualizações
 function updateVisualization() {
     createBarChart();
     createDoughnutChart();
     createTable();
 }
 
-// Event listeners para filtros
 document.getElementById('mesFilter').addEventListener('change', updateVisualization);
 document.getElementById('unidadeFilter').addEventListener('change', updateVisualization);
 document.getElementById('cboFilter').addEventListener('change', updateVisualization);
 
-// Inicializar aplicação
 document.addEventListener('DOMContentLoaded', function() {
     initializeFilters();
     updateVisualization();
