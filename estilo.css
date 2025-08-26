@@ -111,11 +111,11 @@
     }
 }
 
-@media (min-width: 1024px) {
-    .dashboard-grid-four {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+    @media (min-width: 1024px) {
+        .dashboard-grid-four {
+            grid-template-columns: 1fr 1fr;
+        }
     }
-}
 
 /* Grid para 3 gráficos */
 .dashboard-grid-three {
