@@ -156,8 +156,8 @@ const dados = [
     ["Unidade Xv", "Terapeuta Ocupacional", 0, 0, 0, 0, 0, 3, 15]
 ];
 
-const meses = ["jan./25", "fev./25", "mar./25", "abr./25", "mai./25", "jun./25", "jul./25"];
-const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho"];
+const meses = ["jan./25", "fev./25", "mar./25", "abr./25", "mai./25", "jun./25"];
+const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
 
 // Função para ordenar unidades colocando Multi I, II, III, IV por último
 function sortUnidades(unidades) {
@@ -169,7 +169,7 @@ function sortUnidades(unidades) {
 const unidades = sortUnidades([...new Set(dados.map(item => item[0]))]);
 const cbos = [...new Set(dados.map(item => item[1]))].sort();
 
-let barChart, monthChart, doughnutChart;
+let barChart, monthChart, doughnutChart, cboChart;
 let selectedMeses = [];
 let selectedUnidades = [];
 let selectedCbos = [];
@@ -284,7 +284,7 @@ function updateTotalValue() {
                 total += item[mesIndex] || 0;
             });
         } else {
-            for (let i = 2; i < 8; i++) {
+            for (let i = 2; i < item.length; i++) {
                 total += item[i] || 0;
             }
         }
@@ -319,7 +319,7 @@ function createBarChart() {
             if (!unidadeTotals[item[0]]) {
                 unidadeTotals[item[0]] = 0;
             }
-            for (let i = 2; i < 8; i++) {
+            for (let i = 2; i < item.length; i++) {
                 unidadeTotals[item[0]] += item[i] || 0;
             }
         });
@@ -654,6 +654,129 @@ function createDoughnutChart() {
     });
 }
 
+// Criar gráfico de barras horizontais por CBO
+function createCboChart() {
+    const ctx = document.getElementById('cboChart').getContext('2d');
+    
+    if (cboChart) {
+        cboChart.destroy();
+    }
+
+    const filteredData = filterData();
+    let cboTotals = {};
+
+    // Calcular totais por CBO baseado nos filtros
+    filteredData.forEach(item => {
+        const cbo = item[1];
+        if (!cboTotals[cbo]) {
+            cboTotals[cbo] = 0;
+        }
+        
+        if (selectedMeses.length > 0) {
+            selectedMeses.forEach(mes => {
+                const mesIndex = meses.indexOf(mes) + 2;
+                cboTotals[cbo] += item[mesIndex] || 0;
+            });
+        } else {
+            for (let i = 2; i < item.length; i++) {
+                cboTotals[cbo] += item[i] || 0;
+            }
+        }
+    });
+
+    // Ordenar CBOs por valor total (maior para menor)
+    const sortedCbos = Object.keys(cboTotals)
+        .filter(cbo => cboTotals[cbo] > 0)
+        .sort((a, b) => cboTotals[b] - cboTotals[a]);
+
+    const values = sortedCbos.map(cbo => cboTotals[cbo]);
+
+    cboChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sortedCbos,
+            datasets: [{
+                label: 'Total de Atendimentos',
+                data: values,
+                backgroundColor: '#166534', // Verde escuro
+                borderColor: '#166534',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Barras horizontais
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.x.toLocaleString('pt-BR')} atendimentos`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('pt-BR');
+                        }
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: {
+                            size: 10
+                        },
+                        maxRotation: 0,
+                        callback: function(value, index) {
+                            const label = this.getLabelForValue(value);
+                            return label.length > 20 ? label.substring(0, 20) + '...' : label;
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    
+                    ctx.save();
+                    ctx.font = 'bold 10px Arial';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    
+                    chart.data.datasets[0].data.forEach((value, index) => {
+                        if (value > 0) {
+                            const meta = chart.getDatasetMeta(0);
+                            const bar = meta.data[index];
+                            
+                            const x = bar.x + 5;
+                            const y = bar.y;
+                            
+                            ctx.fillText(value.toLocaleString('pt-BR'), x, y);
+                        }
+                    });
+                    
+                    ctx.restore();
+                }
+            }
+        }
+    });
+}
+
 // Atualizar tabela
 function updateTable() {
     const filteredData = filterData();
@@ -677,7 +800,7 @@ function updateTable() {
                 cboData[cbo][unidade] += item[mesIndex] || 0;
             });
         } else {
-            for (let i = 2; i < 8; i++) {
+            for (let i = 2; i < item.length; i++) {
                 cboData[cbo][unidade] += item[i] || 0;
             }
         }
@@ -729,6 +852,7 @@ function updateCharts() {
     createBarChart();
     createMonthChart();
     createDoughnutChart();
+    createCboChart();
 }
 
 // Limpar filtros
