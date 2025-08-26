@@ -752,7 +752,6 @@ function createCboChart() {
                     ctx.font = 'bold 10px Arial';
                     ctx.fillStyle = '#000000'; // Cor do texto para ser visível fora da barra
                     ctx.textAlign = 'left';
-                    ctx.textBaseline = 'middle';
                     
                     chart.data.datasets[0].data.forEach((value, index) => {
                         if (value > 0) {
@@ -762,11 +761,9 @@ function createCboChart() {
                             const x = bar.x + bar.width + 5; // Posição X: final da barra + um pequeno espaçamento
                             const y = bar.y; // Posição Y: centro da barra
                             
-                            ctx.fillText(value.toLocaleString('pt-BR'), x, y);
+                            ctx.fillText(value.toLocaleString("pt-BR"), x, y);
                         }
-                    });
-                    
-                    ctx.restore();
+                    });ctx.restore();
                 }
             }
         }
@@ -909,4 +906,3 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
     document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
 });
-
