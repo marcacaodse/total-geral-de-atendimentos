@@ -1,3 +1,4 @@
+// Dados dos atendimentos
 const dados = [
     ["Bela Vista", "Assistente Social", 0, 0, 0, 0, 0, 6],
     ["Jardim Bandeirantes", "Assistente Social", 0, 0, 0, 0, 0, 6],
@@ -156,6 +157,7 @@ const dados = [
 ];
 
 const meses = ["jan./25", "fev./25", "mar./25", "abr./25", "mai./25", "jun./25"];
+const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
 
 // Função para ordenar unidades colocando Multi I, II, III, IV por último
 function sortUnidades(unidades) {
@@ -167,46 +169,41 @@ function sortUnidades(unidades) {
 const unidades = sortUnidades([...new Set(dados.map(item => item[0]))]);
 const cbos = [...new Set(dados.map(item => item[1]))].sort();
 
-let barChart, doughnutChart;
-
-// Variáveis para controlar os filtros customizados
+let barChart, monthChart, doughnutChart;
 let selectedMeses = [];
 let selectedUnidades = [];
 let selectedCbos = [];
 
-// Inicializar filtros customizados
+// Inicializar filtros
 function initializeFilters() {
-    // Inicializar filtros de unidade
+    // Filtro de Unidades
     const unidadeDropdown = document.getElementById('unidadeFilterDropdown');
-    unidades.forEach((unidade, index) => {
-        const optionDiv = document.createElement('div');
-        optionDiv.className = 'multiselect-option';
-        optionDiv.innerHTML = `
-            <input type="checkbox" id="unidade_${index}" value="${unidade}">
-            <label for="unidade_${index}">${unidade}</label>
+    unidades.forEach(unidade => {
+        const option = document.createElement('div');
+        option.className = 'multiselect-option';
+        option.innerHTML = `
+            <input type="checkbox" id="unidade_${unidade.replace(/\s+/g, '_')}" value="${unidade}">
+            <label for="unidade_${unidade.replace(/\s+/g, '_')}">${unidade}</label>
         `;
-        unidadeDropdown.appendChild(optionDiv);
+        unidadeDropdown.appendChild(option);
     });
 
-    // Inicializar filtros de CBO
+    // Filtro de CBOs
     const cboDropdown = document.getElementById('cboFilterDropdown');
-    cbos.forEach((cbo, index) => {
-        const optionDiv = document.createElement('div');
-        optionDiv.className = 'multiselect-option';
-        optionDiv.innerHTML = `
-            <input type="checkbox" id="cbo_${index}" value="${cbo}">
-            <label for="cbo_${index}">${cbo}</label>
+    cbos.forEach(cbo => {
+        const option = document.createElement('div');
+        option.className = 'multiselect-option';
+        option.innerHTML = `
+            <input type="checkbox" id="cbo_${cbo.replace(/\s+/g, '_')}" value="${cbo}">
+            <label for="cbo_${cbo.replace(/\s+/g, '_')}">${cbo}</label>
         `;
-        cboDropdown.appendChild(optionDiv);
+        cboDropdown.appendChild(option);
     });
 
-    // Adicionar event listeners para todos os checkboxes
+    // Event listeners para filtros
     document.addEventListener('change', function(e) {
         if (e.target.type === 'checkbox') {
-            updateSelectedFilters();
-            updateCharts();
-            updateTable();
-            updateValorTotal();
+            updateFilters();
         }
     });
 }
@@ -217,54 +214,56 @@ function toggleDropdown(filterId) {
     const display = document.querySelector(`#${filterId}Container .multiselect-display`);
     
     // Fechar outros dropdowns
-    document.querySelectorAll('.multiselect-dropdown').forEach(dd => {
-        if (dd !== dropdown) {
-            dd.classList.remove('show');
+    document.querySelectorAll('.multiselect-dropdown').forEach(d => {
+        if (d !== dropdown) {
+            d.classList.remove('show');
+            d.parentElement.querySelector('.multiselect-display').classList.remove('active');
         }
     });
     
-    // Alternar o dropdown atual
     dropdown.classList.toggle('show');
-    display.classList.toggle('active', dropdown.classList.contains('show'));
+    display.classList.toggle('active');
 }
 
-// Atualizar filtros selecionados
-function updateSelectedFilters() {
+// Fechar dropdowns ao clicar fora
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.custom-multiselect')) {
+        document.querySelectorAll('.multiselect-dropdown').forEach(d => {
+            d.classList.remove('show');
+            d.parentElement.querySelector('.multiselect-display').classList.remove('active');
+        });
+    }
+});
+
+// Atualizar filtros
+function updateFilters() {
     // Meses
-    selectedMeses = [];
-    document.querySelectorAll('#mesFilterDropdown input[type="checkbox"]:checked').forEach(cb => {
-        selectedMeses.push(cb.value);
-    });
-    updateFilterDisplay('mesFilter', selectedMeses, 'Selecione os meses...');
+    selectedMeses = Array.from(document.querySelectorAll('#mesFilterDropdown input:checked')).map(cb => cb.value);
+    const mesDisplay = document.getElementById('mesFilterDisplay');
+    mesDisplay.textContent = selectedMeses.length > 0 ? 
+        selectedMeses.map(m => m.replace('./25', '')).join(', ') : 
+        'Selecione os meses...';
 
     // Unidades
-    selectedUnidades = [];
-    document.querySelectorAll('#unidadeFilterDropdown input[type="checkbox"]:checked').forEach(cb => {
-        selectedUnidades.push(cb.value);
-    });
-    updateFilterDisplay('unidadeFilter', selectedUnidades, 'Selecione as unidades...');
+    selectedUnidades = Array.from(document.querySelectorAll('#unidadeFilterDropdown input:checked')).map(cb => cb.value);
+    const unidadeDisplay = document.getElementById('unidadeFilterDisplay');
+    unidadeDisplay.textContent = selectedUnidades.length > 0 ? 
+        (selectedUnidades.length > 2 ? `${selectedUnidades.length} unidades selecionadas` : selectedUnidades.join(', ')) : 
+        'Selecione as unidades...';
 
     // CBOs
-    selectedCbos = [];
-    document.querySelectorAll('#cboFilterDropdown input[type="checkbox"]:checked').forEach(cb => {
-        selectedCbos.push(cb.value);
-    });
-    updateFilterDisplay('cboFilter', selectedCbos, 'Selecione os CBOs...');
+    selectedCbos = Array.from(document.querySelectorAll('#cboFilterDropdown input:checked')).map(cb => cb.value);
+    const cboDisplay = document.getElementById('cboFilterDisplay');
+    cboDisplay.textContent = selectedCbos.length > 0 ? 
+        (selectedCbos.length > 2 ? `${selectedCbos.length} CBOs selecionados` : selectedCbos.join(', ')) : 
+        'Selecione os CBOs...';
+
+    updateCharts();
+    updateTable();
+    updateTotalValue();
 }
 
-// Atualizar display do filtro
-function updateFilterDisplay(filterId, selectedItems, placeholder) {
-    const display = document.getElementById(filterId + 'Display');
-    if (selectedItems.length === 0) {
-        display.textContent = placeholder;
-    } else if (selectedItems.length === 1) {
-        display.textContent = selectedItems[0];
-    } else {
-        display.textContent = `${selectedItems.length} itens selecionados`;
-    }
-}
-
-// Filtrar dados com múltiplas seleções
+// Filtrar dados
 function filterData() {
     return dados.filter(item => {
         const unidadeMatch = selectedUnidades.length === 0 || selectedUnidades.includes(item[0]);
@@ -274,487 +273,27 @@ function filterData() {
 }
 
 // Atualizar valor total
-function updateValorTotal() {
+function updateTotalValue() {
     const filteredData = filterData();
     let total = 0;
 
-    if (selectedMeses.length > 0) {
-        // Filtrar por meses específicos
-        selectedMeses.forEach(mes => {
-            const mesIndex = meses.indexOf(mes) + 2;
-            filteredData.forEach(item => {
-                total += item[mesIndex] || 0;
-            });
-        });
-    } else {
-        // Todos os meses
-        filteredData.forEach(item => {
-            for (let i = 2; i < 8; i++) {
-                total += item[i] || 0;
-            }
-        });
-    }
-
-    document.getElementById('valorTotal').textContent = total.toLocaleString();
-}
-
-// Limpar todos os filtros
-function clearFilters() {
-    // Desmarcar todos os checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.checked = false;
-    });
-    
-    // Limpar arrays de seleção
-    selectedMeses = [];
-    selectedUnidades = [];
-    selectedCbos = [];
-    
-    // Atualizar displays
-    updateFilterDisplay('mesFilter', selectedMeses, 'Selecione os meses...');
-    updateFilterDisplay('unidadeFilter', selectedUnidades, 'Selecione as unidades...');
-    updateFilterDisplay('cboFilter', selectedCbos, 'Selecione os CBOs...');
-    
-    // Atualizar gráficos e tabela
-    updateCharts();
-    updateTable();
-    updateValorTotal();
-}
-
-// Exportar dados para Excel
-function exportToExcel() {
-    const filteredData = filterData();
-    
-    // Criar cabeçalho
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Unidade de Saúde,CBO,Janeiro,Fevereiro,Março,Abril,Maio,Junho,Total\\n";
-    
-    // Adicionar dados
-    filteredData.forEach(row => {
-        let total = 0;
-        for (let i = 2; i < 8; i++) {
-            total += row[i] || 0;
-        }
-        
-        const csvRow = [
-            row[0], // Unidade
-            row[1], // CBO
-            row[2] || 0, // Jan
-            row[3] || 0, // Fev
-            row[4] || 0, // Mar
-            row[5] || 0, // Abr
-            row[6] || 0, // Mai
-            row[7] || 0, // Jun
-            total
-        ].join(',');
-        
-        csvContent += csvRow + "\\n";
-    });
-    
-    // Criar e baixar arquivo
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    
-    // Nome do arquivo baseado nos filtros
-    let fileName = "atendimentos";
-    if (selectedMeses.length > 0) {
-        fileName += "_" + selectedMeses.join("-");
-    }
-    fileName += ".csv";
-    
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-// Criar gráfico de barras
-function createBarChart() {
-    const ctx = document.getElementById('barChart').getContext('2d');
-    
-    if (barChart) {
-        barChart.destroy();
-    }
-
-    const filteredData = filterData();
-    const mesFilters = getSelectedValues('mesFilter');
-    
-    let unidadeTotals = {};
-
-    if (mesFilters.length > 0) {
-        // Filtrar por meses específicos
-        mesFilters.forEach(mes => {
-            const mesIndex = meses.indexOf(mes) + 2;
-            filteredData.forEach(item => {
-                if (!unidadeTotals[item[0]]) {
-                    unidadeTotals[item[0]] = 0;
-                }
-                unidadeTotals[item[0]] += item[mesIndex] || 0;
-            });
-        });
-    } else {
-        // Todos os meses
-        filteredData.forEach(item => {
-            if (!unidadeTotals[item[0]]) {
-                unidadeTotals[item[0]] = 0;
-            }
-            for (let i = 2; i < 8; i++) {
-                unidadeTotals[item[0]] += item[i] || 0;
-            }
-        });
-    }
-
-    const labels = Object.keys(unidadeTotals).sort();
-    const values = labels.map(label => unidadeTotals[label]);
-
-    barChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: values,
-                backgroundColor: '#dc2626',
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        title: function() {
-                            return '';
-                        },
-                        label: function(context) {
-                            return `${context.label}: ${context.parsed.y}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: '#000000',
-                        font: {
-                            weight: 'bold',
-                            size: 14 // Aumentado o tamanho da fonte
-                        },
-                        maxRotation: 45,
-                        minRotation: 45
-                    },
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: '#666666',
-                        font: {
-                            size: 12
-                        }
-                    },
-                    grid: {
-                        color: '#e5e7eb'
-                    }
-                }
-            },
-            layout: {
-                padding: {
-                    top: 30,
-                    bottom: 10,
-                    left: 10,
-                    right: 10
-                }
-            },
-            animation: {
-                onComplete: function() {
-                    const chart = this;
-                    const ctx = chart.ctx;
-                    ctx.font = 'bold 12px Arial'; // Aumentado o tamanho da fonte dos valores
-                    ctx.fillStyle = '#000000';
-                    ctx.textAlign = 'center';
-                    
-                    chart.data.datasets.forEach((dataset, i) => {
-                        const meta = chart.getDatasetMeta(i);
-                        meta.data.forEach((bar, index) => {
-                            const data = dataset.data[index];
-                            if (data > 0) {
-                                ctx.fillText(data, bar.x, bar.y - 8);
-                            }
-                        });
-                    });
-                }
-            }
-        }
-    });
-}
-
-// Criar gráfico de rosca
-function createDoughnutChart() {
-    const ctx = document.getElementById('doughnutChart').getContext('2d');
-    
-    if (doughnutChart) {
-        doughnutChart.destroy();
-    }
-
-    const filteredData = filterData();
-    const mesFilters = getSelectedValues('mesFilter');
-    let monthTotals = {};
-    let centerText = '';
-
-    if (mesFilters.length > 0) {
-        // Filtrar por meses específicos
-        mesFilters.forEach(mes => {
-            const mesIndex = meses.indexOf(mes) + 2;
-            const total = filteredData.reduce((sum, item) => sum + (item[mesIndex] || 0), 0);
-            monthTotals[mes] = total;
-        });
-        
-        const totalGeral = Object.values(monthTotals).reduce((a, b) => a + b, 0);
-        centerText = `Total Filtrado\\n${totalGeral}`;
-    } else {
-        // Todos os meses
-        meses.forEach((mes, index) => {
-            monthTotals[mes] = 0;
-            filteredData.forEach(item => {
-                monthTotals[mes] += item[index + 2] || 0;
-            });
-        });
-        const totalGeral = Object.values(monthTotals).reduce((a, b) => a + b, 0);
-        centerText = `Total Geral\\n${totalGeral}`;
-    }
-
-    const labels = Object.keys(monthTotals);
-    const values = Object.values(monthTotals);
-    const total = values.reduce((a, b) => a + b, 0);
-
-    const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#f97316'];
-
-    doughnutChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: labels.map(mes => {
-                const mesNomes = {
-                    'jan./25': 'Janeiro',
-                    'fev./25': 'Fevereiro', 
-                    'mar./25': 'Março',
-                    'abr./25': 'Abril',
-                    'mai./25': 'Maio',
-                    'jun./25': 'Junho'
-                };
-                return mesNomes[mes] || mes;
-            }),
-            datasets: [{
-                data: values,
-                backgroundColor: colors.slice(0, values.length),
-                borderWidth: 2,
-                borderColor: '#ffffff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '45%', // Reduzido para dar mais espaço para a legenda
-            plugins: {
-                legend: {
-                    display: false // Desabilitar a legenda padrão
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.parsed;
-                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                            return `${context.label}: ${value} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        },
-        plugins: [{
-            beforeDraw: function(chart) {
-                const ctx = chart.ctx;
-                ctx.save();
-                
-                // Desenhar o texto central
-                ctx.font = 'bold 16px Arial';
-                ctx.fillStyle = '#374151';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-                const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
-                
-                const lines = centerText.split('\\n');
-                lines.forEach((line, index) => {
-                    ctx.fillText(line, centerX, centerY + (index - 0.5) * 20);
-                });
-                
-                ctx.restore();
-            },
-            afterDraw: function(chart) {
-                const ctx = chart.ctx;
-                const data = chart.data;
-                const meta = chart.getDatasetMeta(0);
-                
-                ctx.save();
-                ctx.font = 'bold 12px Arial';
-                ctx.fillStyle = '#ffffff';
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 2;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                // Desenhar legendas em cada setor
-                data.labels.forEach((label, i) => {
-                    const arc = meta.data[i];
-                    const value = data.datasets[0].data[i];
-                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                    
-                    // Calcular posição no meio do arco
-                    const angle = (arc.startAngle + arc.endAngle) / 2;
-                    const radius = (arc.innerRadius + arc.outerRadius) / 2;
-                    
-                    const x = arc.x + Math.cos(angle) * radius;
-                    const y = arc.y + Math.sin(angle) * radius;
-                    
-                    // Desenhar texto com contorno preto para melhor legibilidade
-                    const text = `${label}\\n${percentage}%`;
-                    const lines = text.split('\\n');
-                    
-                    lines.forEach((line, lineIndex) => {
-                        const lineY = y + (lineIndex - 0.5) * 14;
-                        
-                        // Contorno preto
-                        ctx.strokeText(line, x, lineY);
-                        // Texto branco
-                        ctx.fillText(line, x, lineY);
-                    });
-                });
-                
-                ctx.restore();
-            }
-        }]
-    });
-}
-
-// Atualizar tabela
-function updateTable() {
-    const filteredData = filterData();
-    const mesFilters = getSelectedValues('mesFilter');
-    
-    // Agrupar dados por CBO
-    const cboData = {};
     filteredData.forEach(item => {
-        const cbo = item[1];
-        const unidade = item[0];
-        
-        if (!cboData[cbo]) {
-            cboData[cbo] = {};
-        }
-        
-        if (!cboData[cbo][unidade]) {
-            cboData[cbo][unidade] = 0;
-        }
-        
-        // Somar valores baseado nos filtros de mês
-        if (mesFilters.length > 0) {
-            mesFilters.forEach(mes => {
+        if (selectedMeses.length > 0) {
+            selectedMeses.forEach(mes => {
                 const mesIndex = meses.indexOf(mes) + 2;
-                cboData[cbo][unidade] += item[mesIndex] || 0;
+                total += item[mesIndex] || 0;
             });
         } else {
             for (let i = 2; i < 8; i++) {
-                cboData[cbo][unidade] += item[i] || 0;
+                total += item[i] || 0;
             }
         }
     });
 
-    // Criar cabeçalho da tabela
-    const table = document.getElementById('dataTable');
-    const thead = table.querySelector('thead');
-    const tbody = table.querySelector('tbody');
-    
-    // Limpar conteúdo existente
-    thead.innerHTML = '';
-    tbody.innerHTML = '';
-    
-    // Obter todas as unidades únicas dos dados filtrados
-    const unidadesUnicas = [...new Set(filteredData.map(item => item[0]))].sort();
-    
-    // Criar cabeçalho
-    const headerRow = document.createElement('tr');
-    headerRow.innerHTML = `
-        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">CBO</th>
-        ${unidadesUnicas.map(unidade => 
-            `<th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">${unidade}</th>`
-        ).join('')}
-        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50 border-l border-gray-200">Total</th>
-    `;
-    thead.appendChild(headerRow);
-    
-    // Criar linhas de dados
-    Object.keys(cboData).sort().forEach(cbo => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50';
-        
-        let totalCbo = 0;
-        const unidadeCells = unidadesUnicas.map(unidade => {
-            const valor = cboData[cbo][unidade] || 0;
-            totalCbo += valor;
-            return `<td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 text-center">${valor}</td>`;
-        }).join('');
-        
-        row.innerHTML = `
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">${cbo}</td>
-            ${unidadeCells}
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-900 bg-gray-50 border-l border-gray-200">${totalCbo}</td>
-        `;
-        
-        tbody.appendChild(row);
-    });
+    document.getElementById('valorTotal').textContent = total.toLocaleString('pt-BR');
 }
 
-// Atualizar gráficos
-function updateCharts() {
-    createBarChart();
-    createDoughnutChart();
-}
-
-// Inicializar aplicação
-document.addEventListener('DOMContentLoaded', function() {
-    initializeFilters();
-    updateCharts();
-    updateTable();
-    
-    // Event listeners para filtros
-    document.getElementById('mesFilter').addEventListener('change', function() {
-        updateCharts();
-        updateTable();
-    });
-    
-    document.getElementById('unidadeFilter').addEventListener('change', function() {
-        updateCharts();
-        updateTable();
-    });
-    
-    document.getElementById('cboFilter').addEventListener('change', function() {
-        updateCharts();
-        updateTable();
-    });
-    
-    // Event listeners para botões
-    document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
-    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-});
-
-
-// Criar gráfico de barras
+// Criar gráfico de barras por unidade
 function createBarChart() {
     const ctx = document.getElementById('barChart').getContext('2d');
     
@@ -766,7 +305,6 @@ function createBarChart() {
     let unidadeTotals = {};
 
     if (selectedMeses.length > 0) {
-        // Filtrar por meses específicos
         selectedMeses.forEach(mes => {
             const mesIndex = meses.indexOf(mes) + 2;
             filteredData.forEach(item => {
@@ -777,7 +315,6 @@ function createBarChart() {
             });
         });
     } else {
-        // Todos os meses
         filteredData.forEach(item => {
             if (!unidadeTotals[item[0]]) {
                 unidadeTotals[item[0]] = 0;
@@ -788,7 +325,6 @@ function createBarChart() {
         });
     }
 
-    // Usar a ordenação customizada para as labels
     const allUnidades = Object.keys(unidadeTotals);
     const labels = sortUnidades(allUnidades);
     const values = labels.map(label => unidadeTotals[label] || 0);
@@ -880,6 +416,127 @@ function createBarChart() {
     });
 }
 
+// Criar gráfico de barras por mês
+function createMonthChart() {
+    const ctx = document.getElementById('monthChart').getContext('2d');
+    
+    if (monthChart) {
+        monthChart.destroy();
+    }
+
+    const filteredData = filterData();
+    let monthTotals = {};
+
+    // Inicializar totais dos meses
+    meses.forEach(mes => {
+        monthTotals[mes] = 0;
+    });
+
+    // Calcular totais por mês
+    filteredData.forEach(item => {
+        meses.forEach((mes, index) => {
+            const mesIndex = index + 2;
+            monthTotals[mes] += item[mesIndex] || 0;
+        });
+    });
+
+    // Se há filtro de mês, mostrar apenas os meses selecionados
+    let labels, values;
+    if (selectedMeses.length > 0) {
+        labels = selectedMeses.map(mes => mesesNomes[meses.indexOf(mes)]);
+        values = selectedMeses.map(mes => monthTotals[mes]);
+    } else {
+        labels = mesesNomes;
+        values = meses.map(mes => monthTotals[mes]);
+    }
+
+    monthChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: '#ea580c', // Cor laranja
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function() {
+                            return '';
+                        },
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#000000',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#666666',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 30,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = '#000000';
+                    ctx.textAlign = 'center';
+                    
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillText(data, bar.x, bar.y - 8);
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    });
+}
+
 // Criar gráfico de rosca (sem tooltip de valor total)
 function createDoughnutChart() {
     const ctx = document.getElementById('doughnutChart').getContext('2d');
@@ -890,134 +547,110 @@ function createDoughnutChart() {
 
     const filteredData = filterData();
     let monthTotals = {};
-    let centerText = '';
 
-    if (selectedMeses.length > 0) {
-        // Filtrar por meses específicos
-        selectedMeses.forEach(mes => {
-            const mesIndex = meses.indexOf(mes) + 2;
-            const total = filteredData.reduce((sum, item) => sum + (item[mesIndex] || 0), 0);
-            monthTotals[mes] = total;
-        });
-        
-        const totalGeral = Object.values(monthTotals).reduce((a, b) => a + b, 0);
-        centerText = `Total Filtrado\\n${totalGeral.toLocaleString()}`;
-    } else {
-        // Todos os meses
+    meses.forEach(mes => {
+        monthTotals[mes] = 0;
+    });
+
+    filteredData.forEach(item => {
         meses.forEach((mes, index) => {
-            monthTotals[mes] = 0;
-            filteredData.forEach(item => {
-                monthTotals[mes] += item[index + 2] || 0;
-            });
+            const mesIndex = index + 2;
+            monthTotals[mes] += item[mesIndex] || 0;
         });
-        const totalGeral = Object.values(monthTotals).reduce((a, b) => a + b, 0);
-        centerText = `Total Geral\\n${totalGeral.toLocaleString()}`;
+    });
+
+    let labels, values;
+    if (selectedMeses.length > 0) {
+        labels = selectedMeses.map(mes => mesesNomes[meses.indexOf(mes)]);
+        values = selectedMeses.map(mes => monthTotals[mes]);
+    } else {
+        labels = mesesNomes;
+        values = meses.map(mes => monthTotals[mes]);
     }
 
-    const labels = Object.keys(monthTotals);
-    const values = Object.values(monthTotals);
     const total = values.reduce((a, b) => a + b, 0);
-
-    const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#f97316'];
 
     doughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: labels.map(mes => {
-                const mesNomes = {
-                    'jan./25': 'Janeiro',
-                    'fev./25': 'Fevereiro', 
-                    'mar./25': 'Março',
-                    'abr./25': 'Abril',
-                    'mai./25': 'Maio',
-                    'jun./25': 'Junho'
-                };
-                return mesNomes[mes] || mes;
-            }),
+            labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: colors.slice(0, values.length),
+                backgroundColor: [
+                    '#3b82f6', // Azul
+                    '#ef4444', // Vermelho
+                    '#8b5cf6', // Roxo
+                    '#ea580c', // Laranja
+                    '#10b981', // Verde
+                    '#f59e0b'  // Amarelo
+                ],
                 borderWidth: 2,
-                borderColor: '#ffffff'
+                borderColor: '#ffffff',
+                cutout: '50%'
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '45%',
             plugins: {
                 legend: {
                     display: false
                 },
                 tooltip: {
-                    enabled: false // Desabilitar tooltip completamente
+                    enabled: false // Desabilita o tooltip
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    
+                    // Texto central
+                    ctx.save();
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    const centerX = chart.width / 2;
+                    const centerY = chart.height / 2;
+                    
+                    ctx.strokeText('Total Geral', centerX, centerY - 10);
+                    ctx.fillText('Total Geral', centerX, centerY - 10);
+                    ctx.strokeText(total.toLocaleString('pt-BR'), centerX, centerY + 10);
+                    ctx.fillText(total.toLocaleString('pt-BR'), centerX, centerY + 10);
+                    
+                    // Labels nos segmentos
+                    chart.data.datasets[0].data.forEach((value, index) => {
+                        if (value > 0) {
+                            const meta = chart.getDatasetMeta(0);
+                            const arc = meta.data[index];
+                            const angle = (arc.startAngle + arc.endAngle) / 2;
+                            const radius = (arc.innerRadius + arc.outerRadius) / 2;
+                            
+                            const x = centerX + Math.cos(angle) * radius;
+                            const y = centerY + Math.sin(angle) * radius;
+                            
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            
+                            ctx.font = 'bold 12px Arial';
+                            ctx.fillStyle = '#ffffff';
+                            ctx.strokeStyle = '#000000';
+                            ctx.lineWidth = 1;
+                            
+                            ctx.strokeText(labels[index], x, y - 8);
+                            ctx.fillText(labels[index], x, y - 8);
+                            ctx.strokeText(`${percentage}%`, x, y + 8);
+                            ctx.fillText(`${percentage}%`, x, y + 8);
+                        }
+                    });
+                    
+                    ctx.restore();
                 }
             }
-        },
-        plugins: [{
-            beforeDraw: function(chart) {
-                const ctx = chart.ctx;
-                ctx.save();
-                
-                // Desenhar o texto central
-                ctx.font = 'bold 16px Arial';
-                ctx.fillStyle = '#374151';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-                const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
-                
-                const lines = centerText.split('\\n');
-                lines.forEach((line, index) => {
-                    ctx.fillText(line, centerX, centerY + (index - 0.5) * 20);
-                });
-                
-                ctx.restore();
-            },
-            afterDraw: function(chart) {
-                const ctx = chart.ctx;
-                const data = chart.data;
-                const meta = chart.getDatasetMeta(0);
-                
-                ctx.save();
-                ctx.font = 'bold 12px Arial';
-                ctx.fillStyle = '#ffffff';
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 2;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                // Desenhar legendas em cada setor
-                data.labels.forEach((label, i) => {
-                    const arc = meta.data[i];
-                    const value = data.datasets[0].data[i];
-                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                    
-                    // Calcular posição no meio do arco
-                    const angle = (arc.startAngle + arc.endAngle) / 2;
-                    const radius = (arc.innerRadius + arc.outerRadius) / 2;
-                    
-                    const x = arc.x + Math.cos(angle) * radius;
-                    const y = arc.y + Math.sin(angle) * radius;
-                    
-                    // Desenhar texto com contorno preto para melhor legibilidade
-                    const text = `${label}\\n${percentage}%`;
-                    const lines = text.split('\\n');
-                    
-                    lines.forEach((line, lineIndex) => {
-                        const lineY = y + (lineIndex - 0.5) * 14;
-                        
-                        // Contorno preto
-                        ctx.strokeText(line, x, lineY);
-                        // Texto branco
-                        ctx.fillText(line, x, lineY);
-                    });
-                });
-                
-                ctx.restore();
-            }
-        }]
+        }
     });
 }
 
@@ -1025,7 +658,6 @@ function createDoughnutChart() {
 function updateTable() {
     const filteredData = filterData();
     
-    // Agrupar dados por CBO
     const cboData = {};
     filteredData.forEach(item => {
         const cbo = item[1];
@@ -1039,7 +671,6 @@ function updateTable() {
             cboData[cbo][unidade] = 0;
         }
         
-        // Somar valores baseado nos filtros de mês
         if (selectedMeses.length > 0) {
             selectedMeses.forEach(mes => {
                 const mesIndex = meses.indexOf(mes) + 2;
@@ -1052,20 +683,16 @@ function updateTable() {
         }
     });
 
-    // Criar cabeçalho da tabela
     const table = document.getElementById('dataTable');
     const thead = table.querySelector('thead');
     const tbody = table.querySelector('tbody');
     
-    // Limpar conteúdo existente
     thead.innerHTML = '';
     tbody.innerHTML = '';
     
-    // Obter todas as unidades únicas dos dados filtrados e ordenar com Multi por último
     const unidadesUnicas = [...new Set(filteredData.map(item => item[0]))];
     const unidadesOrdenadas = sortUnidades(unidadesUnicas);
     
-    // Criar cabeçalho
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
         <th class="px-4 py-3 text-left text-xs font-medium text-black font-bold uppercase tracking-wider border-b border-gray-200">CBO</th>
@@ -1076,7 +703,6 @@ function updateTable() {
     `;
     thead.appendChild(headerRow);
     
-    // Criar linhas de dados
     Object.keys(cboData).sort().forEach(cbo => {
         const row = document.createElement('tr');
         row.className = 'hover:bg-gray-50';
@@ -1101,29 +727,65 @@ function updateTable() {
 // Atualizar gráficos
 function updateCharts() {
     createBarChart();
+    createMonthChart();
     createDoughnutChart();
 }
 
-// Fechar dropdowns ao clicar fora
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.custom-multiselect')) {
-        document.querySelectorAll('.multiselect-dropdown').forEach(dropdown => {
-            dropdown.classList.remove('show');
-        });
-        document.querySelectorAll('.multiselect-display').forEach(display => {
-            display.classList.remove('active');
-        });
-    }
-});
+// Limpar filtros
+function clearFilters() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    selectedMeses = [];
+    selectedUnidades = [];
+    selectedCbos = [];
+    
+    document.getElementById('mesFilterDisplay').textContent = 'Selecione os meses...';
+    document.getElementById('unidadeFilterDisplay').textContent = 'Selecione as unidades...';
+    document.getElementById('cboFilterDisplay').textContent = 'Selecione os CBOs...';
+    
+    updateCharts();
+    updateTable();
+    updateTotalValue();
+}
 
-// Inicializar aplicação
+// Exportar para Excel
+function exportToExcel() {
+    const filteredData = filterData();
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Unidade,CBO,Janeiro,Fevereiro,Março,Abril,Maio,Junho,Total\n";
+    
+    filteredData.forEach(item => {
+        const total = item.slice(2, 8).reduce((a, b) => a + b, 0);
+        const row = [item[0], item[1], ...item.slice(2, 8), total].join(',');
+        csvContent += row + "\n";
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    
+    const filterText = [];
+    if (selectedMeses.length > 0) filterText.push(`meses_${selectedMeses.join('_')}`);
+    if (selectedUnidades.length > 0) filterText.push(`unidades_${selectedUnidades.length}`);
+    if (selectedCbos.length > 0) filterText.push(`cbos_${selectedCbos.length}`);
+    
+    const fileName = filterText.length > 0 ? 
+        `atendimentos_${filterText.join('_')}.csv` : 
+        'atendimentos_todos.csv';
+    
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Inicialização
 document.addEventListener('DOMContentLoaded', function() {
     initializeFilters();
     updateCharts();
     updateTable();
-    updateValorTotal();
+    updateTotalValue();
     
-    // Event listeners para botões
     document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
     document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
 });
