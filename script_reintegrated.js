@@ -712,11 +712,7 @@ function createCboChart() {
                     display: false
                 },
                 tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.parsed.x.toLocaleString('pt-BR')} atendimentos`;
-                        }
-                    }
+                    enabled: false
                 }
             },
             scales: {
@@ -754,7 +750,7 @@ function createCboChart() {
                     
                     ctx.save();
                     ctx.font = 'bold 10px Arial';
-                    ctx.fillStyle = '#ffffff';
+                    ctx.fillStyle = '#000000'; // Cor do texto para ser visível fora da barra
                     ctx.textAlign = 'left';
                     ctx.textBaseline = 'middle';
                     
@@ -763,8 +759,8 @@ function createCboChart() {
                             const meta = chart.getDatasetMeta(0);
                             const bar = meta.data[index];
                             
-                            const x = bar.x + 5;
-                            const y = bar.y;
+                            const x = bar.x + bar.width + 5; // Posição X: final da barra + um pequeno espaçamento
+                            const y = bar.y; // Posição Y: centro da barra
                             
                             ctx.fillText(value.toLocaleString('pt-BR'), x, y);
                         }
