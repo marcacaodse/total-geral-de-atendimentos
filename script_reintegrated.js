@@ -1,4 +1,4 @@
-/ Dados dos atendimentos
+// Dados dos atendimentos
 const dados = [
     ["Bela Vista", "Assistente Social", 0, 0, 0, 0, 0, 6, 13],
     ["Jardim Bandeirantes", "Assistente Social", 0, 0, 0, 0, 0, 6, 20],
@@ -305,8 +305,619 @@ function createBarChart() {
     let unidadeTotals = {};
 
     if (selectedMeses.length > 0) {
-   
-(Content truncated due to size limit. Use page ranges or line ranges to read remaining content)
+        selectedMeses.forEach(mes => {
+            const mesIndex = meses.indexOf(mes) + 2;
+            filteredData.forEach(item => {
+                if (!unidadeTotals[item[0]]) {
+                    unidadeTotals[item[0]] = 0;
+                }
+                unidadeTotals[item[0]] += item[mesIndex] || 0;
+            });
+        });
+    } else {
+        filteredData.forEach(item => {
+            if (!unidadeTotals[item[0]]) {
+                unidadeTotals[item[0]] = 0;
+            }
+            for (let i = 2; i < item.length; i++) {
+                unidadeTotals[item[0]] += item[i] || 0;
+            }
+        });
+    }
 
+    const allUnidades = Object.keys(unidadeTotals);
+    const labels = sortUnidades(allUnidades);
+    const values = labels.map(label => unidadeTotals[label] || 0);
 
-ao vivo
+    barChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: '#dc2626',
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function() {
+                            return '';
+                        },
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#000000',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#666666',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 30,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = '#000000';
+                    ctx.textAlign = 'center';
+                    
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillText(data, bar.x, bar.y - 8);
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    });
+}
+
+// Criar gráfico de barras por mês
+function createMonthChart() {
+    const ctx = document.getElementById('monthChart').getContext('2d');
+    
+    if (monthChart) {
+        monthChart.destroy();
+    }
+
+    const filteredData = filterData();
+    let monthTotals = {};
+
+    // Inicializar totais dos meses
+    meses.forEach(mes => {
+        monthTotals[mes] = 0;
+    });
+
+    // Calcular totais por mês
+    filteredData.forEach(item => {
+        meses.forEach((mes, index) => {
+            const mesIndex = index + 2;
+            monthTotals[mes] += item[mesIndex] || 0;
+        });
+    });
+
+    // Se há filtro de mês, mostrar apenas os meses selecionados
+    let labels, values;
+    if (selectedMeses.length > 0) {
+        labels = selectedMeses.map(mes => mesesNomes[meses.indexOf(mes)]);
+        values = selectedMeses.map(mes => monthTotals[mes]);
+    } else {
+        labels = mesesNomes;
+        values = meses.map(mes => monthTotals[mes]);
+    }
+
+    monthChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: '#ea580c', // Cor laranja
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function() {
+                            return '';
+                        },
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#000000',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#666666',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 30,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = '#000000';
+                    ctx.textAlign = 'center';
+                    
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillText(data, bar.x, bar.y - 8);
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    });
+}
+
+// Criar gráfico de rosca (sem tooltip de valor total)
+function createDoughnutChart() {
+    const ctx = document.getElementById('doughnutChart').getContext('2d');
+    
+    if (doughnutChart) {
+        doughnutChart.destroy();
+    }
+
+    const filteredData = filterData();
+    let monthTotals = {};
+
+    meses.forEach(mes => {
+        monthTotals[mes] = 0;
+    });
+
+    filteredData.forEach(item => {
+        meses.forEach((mes, index) => {
+            const mesIndex = index + 2;
+            monthTotals[mes] += item[mesIndex] || 0;
+        });
+    });
+
+    let labels, values;
+    if (selectedMeses.length > 0) {
+        labels = selectedMeses.map(mes => mesesNomes[meses.indexOf(mes)]);
+        values = selectedMeses.map(mes => monthTotals[mes]);
+    } else {
+        labels = mesesNomes;
+        values = meses.map(mes => monthTotals[mes]);
+    }
+
+    const total = values.reduce((a, b) => a + b, 0);
+
+    doughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    '#3b82f6', // Azul
+                    '#ef4444', // Vermelho
+                    '#8b5cf6', // Roxo
+                    '#ea580c', // Laranja
+                    '#10b981', // Verde
+                    '#f59e0b'  // Amarelo
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                cutout: '50%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false // Desabilita o tooltip
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    
+                    // Texto central
+                    ctx.save();
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    const centerX = chart.width / 2;
+                    const centerY = chart.height / 2;
+                    
+                    ctx.strokeText('Total Geral', centerX, centerY - 10);
+                    ctx.fillText('Total Geral', centerX, centerY - 10);
+                    ctx.strokeText(total.toLocaleString('pt-BR'), centerX, centerY + 10);
+                    ctx.fillText(total.toLocaleString('pt-BR'), centerX, centerY + 10);
+                    
+                    // Labels nos segmentos
+                    chart.data.datasets[0].data.forEach((value, index) => {
+                        if (value > 0) {
+                            const meta = chart.getDatasetMeta(0);
+                            const arc = meta.data[index];
+                            const angle = (arc.startAngle + arc.endAngle) / 2;
+                            const radius = (arc.innerRadius + arc.outerRadius) / 2;
+                            
+                            const x = centerX + Math.cos(angle) * radius;
+                            const y = centerY + Math.sin(angle) * radius;
+                            
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            
+                            ctx.font = 'bold 12px Arial';
+                            ctx.fillStyle = '#ffffff';
+                            ctx.strokeStyle = '#000000';
+                            ctx.lineWidth = 1;
+                            
+                            ctx.strokeText(labels[index], x, y - 8);
+                            ctx.fillText(labels[index], x, y - 8);
+                            ctx.strokeText(`${percentage}%`, x, y + 8);
+                            ctx.fillText(`${percentage}%`, x, y + 8);
+                        }
+                    });
+                    
+                    ctx.restore();
+                }
+            }
+        }
+    });
+}
+
+// Criar gráfico de barras horizontais por CBO
+function createCboChart() {
+    const ctx = document.getElementById('cboChart').getContext('2d');
+    
+    if (cboChart) {
+        cboChart.destroy();
+    }
+
+    const filteredData = filterData();
+    let cboTotals = {};
+
+    // Calcular totais por CBO baseado nos filtros
+    filteredData.forEach(item => {
+        const cbo = item[1];
+        if (!cboTotals[cbo]) {
+            cboTotals[cbo] = 0;
+        }
+        
+        if (selectedMeses.length > 0) {
+            selectedMeses.forEach(mes => {
+                const mesIndex = meses.indexOf(mes) + 2;
+                cboTotals[cbo] += item[mesIndex] || 0;
+            });
+        } else {
+            for (let i = 2; i < item.length; i++) {
+                cboTotals[cbo] += item[i] || 0;
+            }
+        }
+    });
+
+    // Ordenar CBOs por valor total (maior para menor)
+    const sortedCbos = Object.keys(cboTotals)
+        .filter(cbo => cboTotals[cbo] > 0)
+        .sort((a, b) => cboTotals[b] - cboTotals[a]);
+
+    const values = sortedCbos.map(cbo => cboTotals[cbo]);
+
+    cboChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sortedCbos,
+            datasets: [{
+                label: 'Total de Atendimentos',
+                data: values,
+                backgroundColor: '#166534', // Verde escuro
+                borderColor: '#166534',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'x', // Barras verticais
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false
+                }
+            },
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 80, // Aumentado para acomodar rótulos rotacionados
+                    left: 10,
+                    right: 10
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: {
+                            size: 12 // Aumentado para melhor legibilidade
+                        },
+                        maxRotation: 45, // Rotaciona os rótulos para evitar sobreposição
+                        minRotation: 45,
+                        autoSkip: false, // Desabilita o auto-skip para mostrar todos os rótulos
+                        callback: function(value, index) {
+                            const label = this.getLabelForValue(value);
+                            return label.length > 15 ? label.substring(0, 15) + '...' : label; // Limita o tamanho do rótulo
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString("pt-BR");
+                        }
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    
+                    ctx.save();
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = '#FFFFFF'; // Cor do texto branca
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle'; // Alinhamento vertical no meio
+                    
+                    chart.data.datasets[0].data.forEach((value, index) => {
+                        if (value > 0) {
+                            const meta = chart.getDatasetMeta(0);
+                            const bar = meta.data[index];
+                            
+                            const x = bar.x + bar.width / 2; // Posição X: centro da barra
+                            const y = bar.y + bar.height / 2; // Posição Y: centro da barra
+                            
+                            ctx.save();
+                            ctx.translate(x, y);
+                            ctx.rotate(Math.PI / 2); // Rotaciona 90 graus para vertical
+                            ctx.fillText(value.toLocaleString("pt-BR"), 0, 0);
+                            ctx.restore();
+                        }
+                    });ctx.restore();
+                }
+            }
+        }
+    });
+}
+
+// Atualizar tabela
+function updateTable() {
+    const filteredData = filterData();
+    
+    const cboData = {};
+    filteredData.forEach(item => {
+        const cbo = item[1];
+        const unidade = item[0];
+        
+        if (!cboData[cbo]) {
+            cboData[cbo] = {};
+        }
+        
+        if (!cboData[cbo][unidade]) {
+            cboData[cbo][unidade] = 0;
+        }
+        
+        if (selectedMeses.length > 0) {
+            selectedMeses.forEach(mes => {
+                const mesIndex = meses.indexOf(mes) + 2;
+                cboData[cbo][unidade] += item[mesIndex] || 0;
+            });
+        } else {
+            for (let i = 2; i < item.length; i++) {
+                cboData[cbo][unidade] += item[i] || 0;
+            }
+        }
+    });
+
+    const table = document.getElementById('dataTable');
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
+    
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+    
+    const unidadesUnicas = [...new Set(filteredData.map(item => item[0]))];
+    const unidadesOrdenadas = sortUnidades(unidadesUnicas);
+    
+    const headerRow = document.createElement('tr');
+    headerRow.innerHTML = `
+        <th class="px-4 py-3 text-left text-xs font-medium text-black font-bold uppercase tracking-wider border-b border-gray-200">CBO</th>
+        ${unidadesOrdenadas.map(unidade => 
+            `<th class="px-4 py-3 text-center text-xs font-medium text-black font-bold uppercase tracking-wider border-b border-gray-200">${unidade}</th>`
+        ).join('')}
+        <th class="px-4 py-3 text-center text-xs font-medium text-black font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50 border-l border-gray-200">Total</th>
+    `;
+    thead.appendChild(headerRow);
+    
+    Object.keys(cboData).sort().forEach(cbo => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50';
+        
+        let totalCbo = 0;
+        const unidadeCells = unidadesOrdenadas.map(unidade => {
+            const valor = cboData[cbo][unidade] || 0;
+            totalCbo += valor;
+            return `<td class="px-4 py-3 whitespace-nowrap text-sm text-black text-center">${valor}</td>`;
+        }).join('');
+        
+        row.innerHTML = `
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-black border-r border-gray-200">${cbo}</td>
+            ${unidadeCells}
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-black bg-gray-50 border-l border-gray-200">${totalCbo}</td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+// Atualizar gráficos
+function updateCharts() {
+    createBarChart();
+    createMonthChart();
+    createDoughnutChart();
+    createCboChart();
+}
+
+// Limpar filtros
+function clearFilters() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    selectedMeses = [];
+    selectedUnidades = [];
+    selectedCbos = [];
+    
+    document.getElementById('mesFilterDisplay').textContent = 'Selecione os meses...';
+    document.getElementById('unidadeFilterDisplay').textContent = 'Selecione as unidades...';
+    document.getElementById('cboFilterDisplay').textContent = 'Selecione os CBOs...';
+    
+    updateCharts();
+    updateTable();
+    updateTotalValue();
+}
+
+// Exportar para Excel
+function exportToExcel() {
+    const filteredData = filterData();
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Unidade,CBO,Janeiro,Fevereiro,Março,Abril,Maio,Junho,Total\n";
+    
+    filteredData.forEach(item => {
+        const total = item.slice(2, 8).reduce((a, b) => a + b, 0);
+        const row = [item[0], item[1], ...item.slice(2, 8), total].join(',');
+        csvContent += row + "\n";
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    
+    const filterText = [];
+    if (selectedMeses.length > 0) filterText.push(`meses_${selectedMeses.join('_')}`);
+    if (selectedUnidades.length > 0) filterText.push(`unidades_${selectedUnidades.length}`);
+    if (selectedCbos.length > 0) filterText.push(`cbos_${selectedCbos.length}`);
+    
+    const fileName = filterText.length > 0 ? 
+        `atendimentos_${filterText.join('_')}.csv` : 
+        'atendimentos_todos.csv';
+    
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFilters();
+    updateCharts();
+    updateTable();
+    updateTotalValue();
+    
+    document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+    document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+});
