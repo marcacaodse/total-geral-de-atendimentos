@@ -760,16 +760,16 @@ function createCboChart() {
                     
                     ctx.save();
                     ctx.font = 'bold 12px Arial';
-                    ctx.fillStyle = '#FFFFFF'; // Cor do texto branca
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle'; // Alinhamento vertical no meio
+                    ctx.fillStyle = '#000000'; // Cor do texto preta
+                    ctx.textAlign = 'left'; // Alinhamento à esquerda para texto fora da barra
+                    ctx.textBaseline = 'middle';
                     
                     chart.data.datasets[0].data.forEach((value, index) => {
                         if (value > 0) {
                             const meta = chart.getDatasetMeta(0);
                             const bar = meta.data[index];
                             
-                            const x = bar.x + bar.width / 2; // Posição X: centro da barra
+                            const x = bar.x + bar.width + 5; // Posição X: fora da barra (5px de padding)
                             const y = bar.y + bar.height / 2; // Posição Y: centro da barra
                             
                             ctx.save();
