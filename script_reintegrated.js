@@ -715,6 +715,14 @@ function createCboChart() {
                     enabled: false
                 }
             },
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right: 60 // Aumentado para dar espaço aos rótulos
+                }
+            },
             scales: {
                 x: {
                     beginAtZero: true,
@@ -730,12 +738,14 @@ function createCboChart() {
                 y: {
                     ticks: {
                         font: {
-                            size: 10
+                            size: 12 // Aumentado para melhor legibilidade
                         },
                         maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: false, // Desabilita o auto-skip para mostrar todos os rótulos
                         callback: function(value, index) {
                             const label = this.getLabelForValue(value);
-                            return label.length > 20 ? label.substring(0, 20) + '...' : label;
+                            return label.length > 25 ? label.substring(0, 25) + '...' : label; // Limita o tamanho do rótulo
                         }
                     },
                     grid: {
@@ -749,9 +759,9 @@ function createCboChart() {
                     const ctx = chart.ctx;
                     
                     ctx.save();
-                    ctx.font = 'bold 10px Arial';
+                    ctx.font = 'bold 12px Arial';
                     ctx.fillStyle = '#000000'; // Cor do texto para ser visível fora da barra
-                    ctx.textAlign = 'left';
+                    ctx.textAlign = 'right';
                     
                     chart.data.datasets[0].data.forEach((value, index) => {
                         if (value > 0) {
