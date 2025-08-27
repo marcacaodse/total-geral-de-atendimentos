@@ -704,7 +704,7 @@ function createCboChart() {
             }]
         },
         options: {
-            indexAxis: 'y', // Barras horizontais
+            indexAxis: 'x', // Barras verticais
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -718,38 +718,38 @@ function createCboChart() {
             layout: {
                 padding: {
                     top: 10,
-                    bottom: 10,
+                    bottom: 80, // Aumentado para acomodar rótulos rotacionados
                     left: 10,
-                    right: 60 // Aumentado para dar espaço aos rótulos
+                    right: 10
                 }
             },
             scales: {
                 x: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString('pt-BR');
-                        }
-                    },
-                    grid: {
-                        color: '#e5e7eb'
-                    }
-                },
-                y: {
                     ticks: {
                         font: {
                             size: 12 // Aumentado para melhor legibilidade
                         },
-                        maxRotation: 0,
-                        minRotation: 0,
+                        maxRotation: 45, // Rotaciona os rótulos para evitar sobreposição
+                        minRotation: 45,
                         autoSkip: false, // Desabilita o auto-skip para mostrar todos os rótulos
                         callback: function(value, index) {
                             const label = this.getLabelForValue(value);
-                            return label.length > 25 ? label.substring(0, 25) + '...' : label; // Limita o tamanho do rótulo
+                            return label.length > 15 ? label.substring(0, 15) + '...' : label; // Limita o tamanho do rótulo
                         }
                     },
                     grid: {
                         display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString("pt-BR");
+                        }
+                    },
+                    grid: {
+                        color: '#e5e7eb'
                     }
                 }
             },
@@ -760,16 +760,17 @@ function createCboChart() {
                     
                     ctx.save();
                     ctx.font = 'bold 12px Arial';
-                    ctx.fillStyle = '#000000'; // Cor do texto para ser visível fora da barra
-                    ctx.textAlign = 'right';
+                    ctx.fillStyle = '#FFFFFF'; // Cor do texto branca
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle'; // Alinhamento vertical no meio
                     
                     chart.data.datasets[0].data.forEach((value, index) => {
                         if (value > 0) {
                             const meta = chart.getDatasetMeta(0);
                             const bar = meta.data[index];
                             
-                            const x = bar.x + bar.width + 5; // Posição X: final da barra + um pequeno espaçamento
-                            const y = bar.y; // Posição Y: centro da barra
+                            const x = bar.x + bar.width / 2; // Posição X: centro da barra
+                            const y = bar.y + bar.height / 2; // Posição Y: centro da barra
                             
                             ctx.fillText(value.toLocaleString("pt-BR"), x, y);
                         }
