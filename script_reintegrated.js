@@ -156,8 +156,8 @@ const dados = [
     ["Unidade Xv", "Terapeuta Ocupacional", 0, 0, 0, 0, 0, 3, 15]
 ];
 
-const meses = ["jan./25", "fev./25", "mar./25", "abr./25", "mai./25", "jun./25"];
-const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
+const meses = ["jan./25", "fev./25", "mar./25", "abr./25", "mai./25", "jun./25", "jul./25"];
+const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho"];
 
 // Função para ordenar unidades colocando Multi I, II, III, IV por último
 function sortUnidades(unidades) {
