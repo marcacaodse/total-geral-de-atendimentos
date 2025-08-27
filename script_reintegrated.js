@@ -712,7 +712,7 @@ function createCboChart() {
                     display: false
                 },
                 tooltip: {
-                    enabled: false
+                    enabled: true
                 }
             },
             layout: {
@@ -751,34 +751,6 @@ function createCboChart() {
                     grid: {
                         color: '#e5e7eb'
                     }
-                }
-            },
-            animation: {
-                onComplete: function() {
-                    const chart = this;
-                    const ctx = chart.ctx;
-                    
-                    ctx.save();
-                    ctx.font = 'bold 12px Arial';
-                    ctx.fillStyle = '#000000'; // Cor do texto preta
-                    ctx.textAlign = 'left'; // Alinhamento à esquerda para texto fora da barra
-                    ctx.textBaseline = 'middle';
-                    
-                    chart.data.datasets[0].data.forEach((value, index) => {
-                        if (value > 0) {
-                            const meta = chart.getDatasetMeta(0);
-                            const bar = meta.data[index];
-                            
-                            const x = bar.x + bar.width + 5; // Posição X: fora da barra (5px de padding)
-                            const y = bar.y + bar.height / 2; // Posição Y: centro da barra
-                            
-                            ctx.save();
-                            ctx.translate(x, y);
-                            ctx.rotate(Math.PI / 2); // Rotaciona 90 graus para vertical
-                            ctx.fillText(value.toLocaleString("pt-BR"), 0, 0);
-                            ctx.restore();
-                        }
-                    });ctx.restore();
                 }
             }
         }
