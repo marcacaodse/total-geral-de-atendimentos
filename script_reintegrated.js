@@ -772,7 +772,11 @@ function createCboChart() {
                             const x = bar.x + bar.width / 2; // Posição X: centro da barra
                             const y = bar.y + bar.height / 2; // Posição Y: centro da barra
                             
-                            ctx.fillText(value.toLocaleString("pt-BR"), x, y);
+                            ctx.save();
+                            ctx.translate(x, y);
+                            ctx.rotate(Math.PI / 2); // Rotaciona 90 graus para vertical
+                            ctx.fillText(value.toLocaleString("pt-BR"), 0, 0);
+                            ctx.restore();
                         }
                     });ctx.restore();
                 }
